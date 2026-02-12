@@ -1,138 +1,163 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Toolkit</title>
-    <style>
-        body { font-family: Arial, sans-serif; }
-        .module { margin-bottom: 20px; padding: 10px; border: 1px solid #530999; }
-        .done { text-decoration: line-through; color: gray; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Меню столовой</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        max-width: 900px;
+        margin: 20px auto;
+        background: #c7b8d8;
+    }
+    h1 {
+        text-align: center;
+    }
+    .form-group {
+        margin-bottom: 10px;
+    }
+    input, select, button {
+        padding: 8px;
+        margin-right: 5px;
+    }
+    button {
+        cursor: pointer;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+        background: rgb(255, 255, 255);
+    }
+    th, td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: center;
+    }
+    th {
+        background-color: #333333;
+        color: white;
+    }
+    .actions button {
+        margin: 0 3px;
+    }
+</style>
 </head>
 <body>
-    <h1>Student Toolkit</h1>
-    <div class="module">
-        <h2>Модуль А: Калькулятор оценок</h2>
-        <button id="calculateGradesBtn">Посчитать</button>
-        <div id="gradesOutput"></div>
-    </div>
-    <div class="module">
-        <h2>Модуль В: Конвертер температуры</h2>
-        <input type="number" id="tempInput" placeholder="Введите температуру">
-        <select id="tempMode">
-            <option value="c_to_f">C to F</option>
-            <option value="f_to_c">F to C</option>
+<h1>Меню столовой</h1>
+<div>
+    <div class="form-group">
+        <input type="text" id="name" placeholder="Название блюда">
+        <input type="number" id="price" placeholder="Цена">
+        <input type="number" id="calories" placeholder="Калории">
+        <select id="category">
+            <option value="Первое">Первое</option>
+            <option value="Второе">Второе</option>
+            <option value="Напиток">Напиток</option>
+            <option value="Десерт">Десерт</option>
         </select>
-        <button id="convertTempBtn">Конвертировать</button>
-        <div id="tempOutput"></div>
+        <button onclick="addOrUpdateItem()">Сохранить</button>
     </div>
-    <div class="module">
-        <h2>Модуль С: To-do список</h2>
-        <input type="text" id="taskInput" placeholder="Введите задачу">
-        <button id="addTaskBtn">Добавить</button>
-        <ul id="taskList"></ul>
+
+    <div class="form-group">
+        <input type="text" id="search" placeholder="Поиск..." oninput="render()">
+        <select id="filter" onchange="render()">
+            <option value="">Все категории</option>
+            <option value="Первое">Первое</option>
+            <option value="Второе">Второе</option>
+            <option value="Напиток">Напиток</option>
+            <option value="Десерт">Десерт</option>
+        </select>
     </div>
-    <script>
-        document.getElementById('calculateGradesBtn').addEventListener('click', function() {
-            const input = prompt('Введите оценки через запятую (пример: 5, 4, 3, 5, 4):');
-            if (!input) {
-                showError('gradesOutput', 'Ввод отменен или пуст.');
-                return;
-            }
-            const gradesStr = input.split(',').map(str => str.trim());
-            const grades = gradesStr.map(str => parseFloat(str));
-            if (grades.some(isNaN)) {
-                showError('gradesOutput', 'Введены неверные данные. Все значения должны быть числами.');
-                return;
-            }
-            if (grades.length === 0) {
-                showError('gradesOutput', 'Не введено ни одной оценки.');
-                return;
-            }
-            const count = grades.length;
-            const sum = grades.reduce((acc, val) => acc + val, 0);
-            const average = (sum / count).toFixed(2);
-            const max = Math.max(...grades);
-            const min = Math.min(...grades);
-            const outputDiv = document.getElementById('gradesOutput');
-            outputDiv.innerHTML = `
-                <p>Средний балл: ${average}</p>
-                <p>Максимальная оценка: ${max}</p>
-                <p>Минимальная оценка: ${min}</p>
-                <p>Количество оценок: ${count}</p>
+</div>
+
+<table>
+    <thead>
+        <tr>
+            <th>Название</th>
+            <th>Цена</th>
+            <th>Калории</th>
+            <th>Категория</th>
+            <th>Действия</th>
+        </tr>
+    </thead>
+    <tbody id="menuTable"></tbody>
+</table>
+<script>
+let menu = JSON.parse(localStorage.getItem("menu")) || [];
+let editIndex = null;
+function saveToStorage() {
+    localStorage.setItem("menu", JSON.stringify(menu));
+}
+function addOrUpdateItem() {
+    const name = document.getElementById("name").value.trim();
+    const price = document.getElementById("price").value;
+    const calories = document.getElementById("calories").value;
+    const category = document.getElementById("category").value;
+    if (!name || !price || !calories) {
+        alert("Заполните все поля!");
+        return;
+    }
+    const item = { name, price, calories, category };
+    if (editIndex === null) {
+        menu.push(item);
+    } else {
+        menu[editIndex] = item;
+        editIndex = null;
+    }
+    saveToStorage();
+    clearForm();
+    render();
+}
+function editItem(index) {
+    const item = menu[index];
+    document.getElementById("name").value = item.name;
+    document.getElementById("price").value = item.price;
+    document.getElementById("calories").value = item.calories;
+    document.getElementById("category").value = item.category;
+    editIndex = index;
+}
+function deleteItem(index) {
+    if (confirm("Удалить блюдо?")) {
+        menu.splice(index, 1);
+        saveToStorage();
+        render();
+    }
+}
+function clearForm() {
+    document.getElementById("name").value = "";
+    document.getElementById("price").value = "";
+    document.getElementById("calories").value = "";
+    editIndex = null;
+}
+function render() {
+    const search = document.getElementById("search").value.toLowerCase();
+    const filter = document.getElementById("filter").value;
+    const table = document.getElementById("menuTable");
+    table.innerHTML = "";
+    menu.forEach((item, index) => {
+        if (
+            item.name.toLowerCase().includes(search) &&
+            (filter === "" || item.category === filter)
+        ) {
+            const row = `
+                <tr>
+                    <td>${item.name}</td>
+                    <td>${item.price} ₽</td>
+                    <td>${item.calories} ккал</td>
+                    <td>${item.category}</td>
+                    <td class="actions">
+                        <button onclick="editItem(${index})">✏</button>
+                        <button onclick="deleteItem(${index})">🗑</button>
+                    </td>
+                </tr>
             `;
-        });
-        function showError(outputId, message) {
-            const outputDiv = document.getElementById(outputId);
-            outputDiv.innerHTML = `<p style="color: red;">Ошибка: ${message}</p>`;
+            table.innerHTML += row;
         }
-        document.getElementById('convertTempBtn').addEventListener('click', function() {
-            const temp = parseFloat(document.getElementById('tempInput').value);
-            const mode = document.getElementById('tempMode').value;
-            if (isNaN(temp)) {
-                showError('tempOutput', 'Введите числовое значение температуры.');
-                return;
-            }
-            let result;
-            if (mode === 'c_to_f') {
-                result = (temp * 9/5) + 32;
-                result = `Результат: ${temp}°C = ${result.toFixed(2)}°F`;
-            } else if (mode === 'f_to_c') {
-                result = (temp - 32) * 5/9;
-                result = `Результат: ${temp}°F = ${result.toFixed(2)}°C`;
-            }
-            document.getElementById('tempOutput').innerHTML = `<p>${result}</p>`;
-        });
-        const taskList = document.getElementById('taskList');
-        const taskInput = document.getElementById('taskInput');
-        function loadTasks() {
-            const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
-            tasks.forEach(task => addTaskToList(task.text, task.done));
-        }
-        function saveTasks() {
-            const tasks = [];
-            taskList.querySelectorAll('li').forEach(li => {
-                tasks.push({
-                    text: li.querySelector('span').textContent,
-                    done: li.querySelector('span').classList.contains('done')
-                });
-            });
-            localStorage.setItem('tasks', JSON.stringify(tasks));
-        }
-        function addTaskToList(text, done = false) {
-            const li = document.createElement('li');
-            const span = document.createElement('span');
-            span.textContent = text;
-            if (done) span.classList.add('done');
-            const doneBtn = document.createElement('button');
-            doneBtn.textContent = 'Готово';
-            doneBtn.addEventListener('click', () => {
-                span.classList.toggle('done');
-                saveTasks();
-            });
-            const deleteBtn = document.createElement('button');
-            deleteBtn.textContent = 'Удалить';
-            deleteBtn.addEventListener('click', () => {
-                li.remove();
-                saveTasks();
-            });
-            li.appendChild(span);
-            li.appendChild(doneBtn);
-            li.appendChild(deleteBtn);
-            taskList.appendChild(li);
-        }
-        document.getElementById('addTaskBtn').addEventListener('click', () => {
-            const text = taskInput.value.trim();
-            if (text) {
-                addTaskToList(text);
-                saveTasks();
-                taskInput.value = '';
-            } else {
-                alert('Введите текст задачи.');
-            }
-        });
-        loadTasks();
-    </script>
+    });
+}
+render();
+</script>
 </body>
 </html>
