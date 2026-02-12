@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Toolkit</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .module { margin-bottom: 20px; padding: 10px; border: 1px solid #530999; }
+        .done { text-decoration: line-through; color: gray; }
+    </style>
+</head>
+<body>
+    <h1>Student Toolkit</h1>
+    <div class="module">
+        <h2>Модуль А: Калькулятор оценок</h2>
+        <button id="calculateGradesBtn">Посчитать</button>
+        <div id="gradesOutput"></div>
+    </div>
+    <div class="module">
+        <h2>Модуль В: Конвертер температуры</h2>
+        <input type="number" id="tempInput" placeholder="Введите температуру">
+        <select id="tempMode">
+            <option value="c_to_f">C to F</option>
+            <option value="f_to_c">F to C</option>
+        </select>
+        <button id="convertTempBtn">Конвертировать</button>
+        <div id="tempOutput"></div>
+    </div>
+    <div class="module">
+        <h2>Модуль С: To-do список</h2>
+        <input type="text" id="taskInput" placeholder="Введите задачу">
+        <button id="addTaskBtn">Добавить</button>
+        <ul id="taskList"></ul>
+    </div>
+    <script>
+        document.getElementById('calculateGradesBtn').addEventListener('click', function() {
+            const input = prompt('Введите оценки через запятую (пример: 5, 4, 3, 5, 4):');
+            if (!input) {
+                showError('gradesOutput', 'Ввод отменен или пуст.');
+                return;
+            }
+            const gradesStr = input.split(',').map(str => str.trim());
+            const grades = gradesStr.map(str => parseFloat(str));
+            if (grades.some(isNaN)) {
+                showError('gradesOutput', 'Введены неверные данные. Все значения должны быть числами.');
+                return;
+            }
+            if (grades.length === 0) {
+                showError('gradesOutput', 'Не введено ни одной оценки.');
+                return;
+            }
+            const count = grades.length;
+            const sum = grades.reduce((acc, val) => acc + val, 0);
+            const average = (sum / count).toFixed(2);
+            const max = Math.max(...grades);
+            const min = Math.min(...grades);
+            const outputDiv = document.getElementById('gradesOutput');
+            outputDiv.innerHTML = `
+                <p>Средний балл: ${average}</p>
+                <p>Максимальная оценка: ${max}</p>
+                <p>Минимальная оценка: ${min}</p>
+                <p>Количество оценок: ${count}</p>
+            `;
+        });
+        function showError(outputId, message) {
+            const outputDiv = document.getElementById(outputId);
+            outputDiv.innerHTML = `<p style="color: red;">Ошибка: ${message}</p>`;
+        }
+        document.getElementById('convertTempBtn').addEventListener('click', function() {
+            const temp = parseFloat(document.getElementById('tempInput').value);
+            const mode = document.getElementById('tempMode').value;
+            if (isNaN(temp)) {
+                showError('tempOutput', 'Введите числовое значение температуры.');
+                return;
+            }
+            let result;
+            if (mode === 'c_to_f') {
+                result = (temp * 9/5) + 32;
+                result = `Результат: ${temp}°C = ${result.toFixed(2)}°F`;
+            } else if (mode === 'f_to_c') {
+                result = (temp - 32) * 5/9;
+                result = `Результат: ${temp}°F = ${result.toFixed(2)}°C`;
+            }
+            document.getElementById('tempOutput').innerHTML = `<p>${result}</p>`;
+        });
+        const taskList = document.getElementById('taskList');
+        const taskInput = document.getElementById('taskInput');
+        function loadTasks() {
+            const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+            tasks.forEach(task => addTaskToList(task.text, task.done));
+        }
+        function saveTasks() {
+            const tasks = [];
+            taskList.querySelectorAll('li').forEach(li => {
+                tasks.push({
+                    text: li.querySelector('span').textContent,
+                    done: li.querySelector('span').classList.contains('done')
+                });
+            });
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+        }
+        function addTaskToList(text, done = false) {
+            const li = document.createElement('li');
+            const span = document.createElement('span');
+            span.textContent = text;
+            if (done) span.classList.add('done');
+            const doneBtn = document.createElement('button');
+            doneBtn.textContent = 'Готово';
+            doneBtn.addEventListener('click', () => {
+                span.classList.toggle('done');
+                saveTasks();
+            });
+            const deleteBtn = document.createElement('button');
+            deleteBtn.textContent = 'Удалить';
+            deleteBtn.addEventListener('click', () => {
+                li.remove();
+                saveTasks();
+            });
+            li.appendChild(span);
+            li.appendChild(doneBtn);
+            li.appendChild(deleteBtn);
+            taskList.appendChild(li);
+        }
+        document.getElementById('addTaskBtn').addEventListener('click', () => {
+            const text = taskInput.value.trim();
+            if (text) {
+                addTaskToList(text);
+                saveTasks();
+                taskInput.value = '';
+            } else {
+                alert('Введите текст задачи.');
+            }
+        });
+        loadTasks();
+    </script>
+</body>
+</html>
