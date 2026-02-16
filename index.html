@@ -2,144 +2,295 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>JS Algorithms Lab</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Сборник задач JS</title>
     <style>
-        body { font-family: sans-serif; background: #f4f7f6; padding: 20px; color: #333; }
-        .container { max-width: 900px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        h1 { text-align: center; color: #2c3e50; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; }
-        .card { border: 1px solid #ddd; padding: 15px; border-radius: 8px; transition: 0.3s; }
-        .card:hover { border-color: #3498db; background: #f0f9ff; }
-        input, button, textarea { width: 100%; padding: 8px; margin-top: 10px; border-radius: 4px; border: 1px solid #ccc; box-sizing: border-box; }
-        button { background: #3498db; color: white; border: none; cursor: pointer; font-weight: bold; }
-        button:hover { background: #2980b9; }
-        .result { margin-top: 10px; font-size: 0.9em; font-family: monospace; color: #e67e22; word-break: break-all; }
+        :root { --primary: #2c3e50; --accent: #3498db; --bg: #f4f4f9; }
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; height: 100vh; background: var(--bg); }
+
+        .sidebar { width: 250px; background: var(--primary); color: white; overflow-y: auto; display: flex; flex-direction: column; }
+        .sidebar h2 { padding: 20px; margin: 0; background: #1a252f; font-size: 1.2rem; }
+        .nav-btn { background: none; border: none; color: #ecf0f1; padding: 15px 20px; text-align: left; cursor: pointer; transition: 0.3s; border-bottom: 1px solid #34495e; }
+        .nav-btn:hover, .nav-btn.active { background: var(--accent); }
+
+        .main-content { flex: 1; padding: 40px; overflow-y: auto; }
+        .task-section { display: none; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); max-width: 800px; margin: 0 auto; }
+        .task-section.active { display: block; animation: fadeIn 0.3s; }
+
+        h1 { margin-top: 0; color: var(--primary); }
+        .input-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: bold; }
+        input, textarea, select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; font-size: 1rem; margin-bottom: 10px; }
+        button { background: var(--accent); color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 1rem; }
+        button:hover { opacity: 0.9; }
+        .result-box { margin-top: 20px; padding: 15px; background: #eef2f3; border-left: 4px solid var(--accent); border-radius: 4px; min-height: 20px; word-break: break-all; }
+
+        table.multi-table { border-collapse: collapse; width: 100%; }
+        table.multi-table td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+        .highlight { background-color: #ffeaa7; font-weight: bold; }
+        .timer-display { font-size: 3rem; font-weight: bold; text-align: center; margin: 20px 0; }
+        .timer-warning { color: #e74c3c; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>18 Алгоритмических Задач</h1>
-    <div class="grid" id="main-grid"></div>
-</div>
+    <div class="sidebar" id="sidebar">
+        <h2>Задачи</h2>
+        <button class="nav-btn active" onclick="showTask('task1')">1. Умная сумма</button>
+        <button class="nav-btn" onclick="showTask('task2')">2. Палиндром</button>
+        <button class="nav-btn" onclick="showTask('task3')">3. Сжатие RLE</button>
+        <button class="nav-btn" onclick="showTask('task4')">4. Таблица умножения</button>
+        <button class="nav-btn" onclick="showTask('task5')">5. Генератор пароля</button>
+        <button class="nav-btn" onclick="showTask('task7')">7. Таймер экзамена</button>
+        <button class="nav-btn" onclick="showTask('task8')">8. Поиск по тексту</button>
+        <button class="nav-btn" onclick="showTask('task9')">9. Калькулятор</button>
+    </div>
 
-<script>
-    const tasks = [
-        { id: 1, title: "1. FizzBuzz+", desc: "N: 3→Fizz, 5→Buzz, 7→Bazz", input: "105", fn: (v) => {
-            let res = [];
-            for(let i=1; i<=v; i++) {
-                let s = "";
-                if(i%3===0) s+="Fizz"; if(i%5===0) s+="Buzz"; if(i%7===0) s+="Bazz";
-                res.push(s || i);
-            }
-            return res.join(", ");
-        }},
-        { id: 2, title: "2. Digital Root", desc: "Сумма цифр до 1 цифры", input: "456", fn: (v) => {
-            while(v.length > 1) v = v.split('').reduce((a,b)=>+a + +b, 0).toString();
-            return v;
-        }},
-        { id: 3, title: "3. Второй максимум", desc: "Массив через запятую (без sort)", input: "10, 40, 30, 40, 20", fn: (v) => {
-            let arr = v.split(',').map(Number), max1 = -Infinity, max2 = -Infinity;
-            for(let n of arr) {
-                if(n > max1) { max2 = max1; max1 = n; }
-                else if(n > max2 && n < max1) { max2 = n; }
-            }
-            return max2;
-        }},
-        { id: 4, title: "4. Уникальные (1 раз)", desc: "Массив через запятую", input: "1,2,2,3,4,4,5", fn: (v) => {
-            let arr = v.split(','), counts = {};
-            arr.forEach(x => counts[x] = (counts[x]||0) + 1);
-            return arr.filter(x => counts[x] === 1).join(', ');
-        }},
-        { id: 5, title: "5. Простые числа до N", desc: "Введите N", input: "20", fn: (v) => {
-            let res = [];
-            for(let i=2; i<=v; i++) {
-                let isP = true;
-                for(let j=2; j<=Math.sqrt(i); j++) if(i%j===0) { isP=false; break; }
-                if(isP) res.push(i);
-            }
-            return res.join(', ');
-        }},
-        { id: 6, title: "6. НОД / НОК", desc: "Два числа через запятую", input: "12, 18", fn: (v) => {
-            let [a, b] = v.split(',').map(Number);
-            let gcd = (x, y) => y === 0 ? x : gcd(y, x % y);
-            let g = gcd(a, b);
-            return `НОД: ${g}, НОК: ${(a * b) / g}`;
-        }},
-        { id: 7, title: "7. Переворот слов", desc: "Фраза", input: "я учу js", fn: (v) => v.split(' ').reverse().join(' ') },
-        { id: 8, title: "8. Сдвиг массива", desc: "массив | сдвиг", input: "1,2,3,4 | 2", fn: (v) => {
-            let [a, k] = v.split('|');
-            let arr = a.split(','), n = +k % arr.length;
-            return [...arr.slice(-n), ...arr.slice(0, -n)].join(',');
-        }},
-        { id: 9, title: "9. Merge массивов", desc: "arr1 | arr2 (отсорт.)", input: "1,3,5 | 2,4,6", fn: (v) => {
-            let [a, b] = v.split('|').map(x => x.split(',').map(Number));
-            let res = [], i = 0, j = 0;
-            while(i < a.length && j < b.length) res.push(a[i] < b[j] ? a[i++] : b[j++]);
-            return [...res, ...a.slice(i), ...b.slice(j)].join(',');
-        }},
-        { id: 10, title: "10. Частотный словарь", desc: "Слова через пробел", input: "apple banana apple", fn: (v) => {
-            let dict = {};
-            v.split(' ').forEach(w => dict[w] = (dict[w]||0)+1);
-            return JSON.stringify(dict);
-        }},
-        { id: 11, title: "11. Очистка текста", desc: "Текст с лишними пробелами", input: "Привет    мир  \n  тест", fn: (v) => v.replace(/\s+/g, ' ').trim() },
-        { id: 12, title: "12. Email валидатор", desc: "Введите email", input: "test@mail.ru", fn: (v) => {
-            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            return re.test(v) ? "✅ Ок" : "❌ Ошибка в формате";
-        }},
-        { id: 13, title: "13. Телефон KZ", desc: "Любые 10-11 цифр", input: "87071234567", fn: (v) => {
-            let d = v.replace(/\D/g, '').slice(-10);
-            return `+7 (${d.slice(0,3)}) ${d.slice(3,6)}-${d.slice(6,8)}-${d.slice(8,10)}`;
-        }},
-        { id: 14, title: "14. Счётчик смайлов", desc: "Текст со смайлами 😊", input: "Привет 😊 тест 😡 😊", fn: (v) => {
-            let matches = v.match(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu) || [];
-            let count = {};
-            matches.forEach(s => count[s] = (count[s]||0)+1);
-            return JSON.stringify(count);
-        }},
-        { id: 15, title: "15. Калькулятор длины", desc: "Текст", input: "Привет. Как дела?", fn: (v) => {
-            return `Симв: ${v.length}, Слов: ${v.split(/\s+/).length}, Предл: ${v.split(/[.!?]+/).filter(Boolean).length}`;
-        }},
-        { id: 16, title: "16. Поиск хэштегов", desc: "Текст с #тегами", input: "#js #code #js", fn: (v) => {
-            let tags = v.match(/#[a-zа-я0-9]+/gi) || [];
-            return [...new Set(tags)].join(', ');
-        }},
-        { id: 17, title: "17. Camel ↔ Snake", desc: "camelCase или snake_case", input: "my_variable_name", fn: (v) => {
-            if(v.includes('_')) return v.replace(/_([a-z])/g, g => g[1].toUpperCase());
-            return v.replace(/[A-Z]/g, g => `_${g.toLowerCase()}`);
-        }},
-        { id: 18, title: "18. Транслит RU→LAT", desc: "Русский текст", input: "Привет", fn: (v) => {
-            const map = { 'а':'a','б':'b','в':'v','г':'g','д':'d','е':'e','ё':'yo','ж':'zh','з':'z','и':'i','й':'y','к':'k','л':'l','м':'m','н':'n','о':'o','п':'p','р':'r','с':'s','т':'t','у':'u','ф':'f','х':'h','ц':'ts','ч':'ch','ш':'sh','щ':'sch','ъ':'','ы':'y','ь':'','э':'e','ю':'yu','я':'ya' };
-            return v.toLowerCase().split('').map(char => map[char] || char).join('');
-        }}
-    ];
+    <div class="main-content">
+        
+        <div id="task1" class="task-section active">
+            <h1>1. Подсчёт "умной" суммы</h1>
+            <p>Ввод: строка с числами и текстом. Суммирует только числа.</p>
+            <div class="input-group">
+                <input type="text" id="t1-input" value="10 20 abc 5 -3 2.5" placeholder="Введите данные...">
+                <button onclick="solveTask1()">Посчитать</button>
+            </div>
+            <div id="t1-result" class="result-box">Результат появится здесь</div>
+        </div>
 
-    const grid = document.getElementById('main-grid');
-    tasks.forEach(t => {
-        const card = document.createElement('div');
-        card.className = 'card';
-        card.innerHTML = `
-            <strong>${t.title}</strong>
-            <p style="font-size:0.8em; color:gray">${t.desc}</p>
-            <input type="text" id="in-${t.id}" value="${t.input}">
-            <button onclick="runTask(${t.id})">Выполнить</button>
-            <div class="result" id="res-${t.id}"></div>
-        `;
-        grid.appendChild(card);
-    });
+        <div id="task2" class="task-section">
+            <h1>2. Палиндром</h1>
+            <p>Проверка фразы игнорируя пробелы и регистр.</p>
+            <div class="input-group">
+                <input type="text" id="t2-input" value="А роза упала на лапу Азора">
+                <button onclick="solveTask2()">Проверить</button>
+            </div>
+            <div id="t2-result" class="result-box">Результат появится здесь</div>
+        </div>
 
-    function runTask(id) {
-        const task = tasks.find(t => t.id === id);
-        const val = document.getElementById(`in-${id}`).value;
-        const resDiv = document.getElementById(`res-${id}`);
-        try {
-            resDiv.innerText = "Результат: " + task.fn(val);
-        } catch(e) {
-            resDiv.innerText = "Ошибка входа";
+        <div id="task3" class="task-section">
+            <h1>3. Сжатие строки (RLE)</h1>
+            <p>aaabbcccc -> a3b2c4</p>
+            <div class="input-group">
+                <input type="text" id="t3-input" value="aaabbcccc">
+                <button onclick="solveTask3()">Сжать</button>
+            </div>
+            <div id="t3-result" class="result-box">...</div>
+        </div>
+
+        <div id="task4" class="task-section">
+            <h1>4. Таблица умножения N×N</h1>
+            <div class="input-group">
+                <input type="number" id="t4-input" value="5" min="1" max="20">
+                <button onclick="solveTask4()">Сгенерировать</button>
+            </div>
+            <div id="t4-result" class="result-box"></div>
+        </div>
+
+        <div id="task5" class="task-section">
+            <h1>5. Случайный пароль</h1>
+            <div class="input-group">
+                <label>Длина: <span id="pass-len-val">12</span></label>
+                <input type="range" id="t5-len" min="8" max="24" value="12" oninput="document.getElementById('pass-len-val').innerText = this.value">
+                
+                <label><input type="checkbox" id="t5-num" checked> Цифры</label>
+                <label><input type="checkbox" id="t5-sym" checked> Символы</label>
+                <label><input type="checkbox" id="t5-upper" checked> Заглавные</label>
+                <br>
+                <button onclick="solveTask5()">Создать пароль</button>
+            </div>
+            <div id="t5-result" class="result-box" style="font-family: monospace; font-size: 1.2rem;"></div>
+        </div>
+
+        <div id="task7" class="task-section">
+            <h1>7. Таймер экзамена</h1>
+            <div class="input-group">
+                <input type="number" id="t7-min" placeholder="Минуты" value="5">
+                <button onclick="startTimer()">Старт</button>
+                <button onclick="pauseTimer()" style="background:#f39c12">Пауза</button>
+                <button onclick="stopTimer()" style="background:#c0392b">Сброс</button>
+            </div>
+            <div id="t7-display" class="timer-display">00:00</div>
+            <div id="t7-msg"></div>
+        </div>
+
+        <div id="task8" class="task-section">
+            <h1>8. Поиск по странице</h1>
+            <div class="input-group">
+                <input type="text" id="t8-search" placeholder="Что ищем?">
+                <button onclick="solveTask8()">Найти</button>
+            </div>
+            <div id="t8-content" style="border:1px solid #ccc; padding:10px; max-height:200px; overflow:auto;">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ac diam sit amet quam vehicula elementum sed sit amet dui. Curabitur aliquet quam id dui posuere blandit.
+            </div>
+        </div>
+        
+        <div id="task9" class="task-section">
+             <h1>9. Калькулятор (как в телефоне)</h1>
+             <div style="width: 200px;">
+                 <input type="text" id="calc-display" readonly style="text-align: right; margin-bottom: 5px;">
+                 <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px;">
+                     <button onclick="calcInput('7')">7</button>
+                     <button onclick="calcInput('8')">8</button>
+                     <button onclick="calcInput('9')">9</button>
+                     <button onclick="calcInput('/')">/</button>
+                     
+                     <button onclick="calcInput('4')">4</button>
+                     <button onclick="calcInput('5')">5</button>
+                     <button onclick="calcInput('6')">6</button>
+                     <button onclick="calcInput('*')">*</button>
+                    
+                     <button onclick="calcInput('1')">1</button>
+                     <button onclick="calcInput('2')">2</button>
+                     <button onclick="calcInput('3')">3</button>
+                     <button onclick="calcInput('-')">-</button>
+                     
+                     <button onclick="calcInput('0')">0</button>
+                     <button onclick="calcClear()">C</button>
+                     <button onclick="calcResult()">=</button>
+                     <button onclick="calcInput('+')">+</button>
+                 </div>
+             </div>
+        </div>
+
+    </div>
+
+    <script>
+        function showTask(id) {
+            document.querySelectorAll('.task-section').forEach(el => el.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+            event.target.classList.add('active');
         }
-    }
-</script>
+        function solveTask1() {
+            const str = document.getElementById('t1-input').value;
+            const parts = str.split(' ').map(Number).filter(n => !isNaN(n));
+            const sum = parts.reduce((a, b) => a + b, 0);
+            const avg = parts.length ? (sum / parts.length).toFixed(2) : 0;
+            document.getElementById('t1-result').innerHTML = 
+                `Сумма: <b>${sum}</b><br>Количество чисел: <b>${parts.length}</b><br>Среднее: <b>${avg}</b>`;
+        }
+        function solveTask2() {
+            const str = document.getElementById('t2-input').value;
+            const clean = str.toLowerCase().replace(/[^a-zа-яё0-9]/g, '');
+            const reverse = clean.split('').reverse().join('');
+            const isPal = clean === reverse;
+            
+            document.getElementById('t2-result').innerHTML = 
+                isPal ? `<span style="color:green">Это палиндром! ✅</span>` : `<span style="color:red">Не палиндром ❌</span>`;
+        }
+        function solveTask3() {
+            const str = document.getElementById('t3-input').value;
+            let result = '';
+            let count = 1;
+            for (let i = 0; i < str.length; i++) {
+                if (str[i] === str[i+1]) {
+                    count++;
+                } else {
+                    result += str[i] + (count > 1 ? count : '');
+                    count = 1;
+                }
+            }
+            document.getElementById('t3-result').innerText = result;
+        }
+        function solveTask4() {
+            const n = parseInt(document.getElementById('t4-input').value);
+            let html = '<table class="multi-table">';
+            for (let i = 1; i <= n; i++) {
+                html += '<tr>';
+                for (let j = 1; j <= n; j++) {
+                    const isDiag = (i === j); 
+                    html += `<td class="${isDiag ? 'highlight' : ''}">${i * j}</td>`;
+                }
+                html += '</tr>';
+            }
+            html += '</table>';
+            document.getElementById('t4-result').innerHTML = html;
+        }
+        function solveTask5() {
+            const len = document.getElementById('t5-len').value;
+            const useNum = document.getElementById('t5-num').checked;
+            const useSym = document.getElementById('t5-sym').checked;
+            const useUp = document.getElementById('t5-upper').checked;
 
+            const lower = "abcdefghijklmnopqrstuvwxyz";
+            const nums = "0123456789";
+            const syms = "!@#$%^&*()_+";
+            const upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+            let chars = lower;
+            if (useNum) chars += nums;
+            if (useSym) chars += syms;
+            if (useUp) chars += upper;
+
+            let pass = "";
+            for (let i = 0; i < len; i++) {
+                pass += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+
+            let strength = "Слабый";
+            if (len >= 12 && useNum && useUp) strength = "Средний";
+            if (len >= 16 && useNum && useSym && useUp) strength = "Мощный 💪";
+
+            document.getElementById('t5-result').innerHTML = `${pass} <br><small>Сила: ${strength}</small>`;
+        }
+
+        let timerInterval;
+        let totalSeconds = 0;
+
+        function startTimer() {
+            clearInterval(timerInterval);
+            const min = parseInt(document.getElementById('t7-min').value);
+            totalSeconds = min * 60;
+            updateDisplay();
+            
+            timerInterval = setInterval(() => {
+                if (totalSeconds <= 0) {
+                    clearInterval(timerInterval);
+                    document.getElementById('t7-msg').innerText = "Время вышло!";
+                    return;
+                }
+                totalSeconds--;
+                updateDisplay();
+            }, 1000);
+        }
+        function pauseTimer() { clearInterval(timerInterval); }
+        function stopTimer() { clearInterval(timerInterval); totalSeconds = 0; updateDisplay(); document.getElementById('t7-msg').innerText = ""; }
+        
+        function updateDisplay() {
+            const m = Math.floor(totalSeconds / 60).toString().padStart(2, '0');
+            const s = (totalSeconds % 60).toString().padStart(2, '0');
+            const disp = document.getElementById('t7-display');
+            disp.innerText = `${m}:${s}`;
+
+            if (totalSeconds < 300) disp.classList.add('timer-warning');
+            else disp.classList.remove('timer-warning');
+        }
+
+        function solveTask8() {
+            const term = document.getElementById('t8-search').value;
+            const container = document.getElementById('t8-content');
+            const text = container.textContent; 
+            
+            if (!term) return;
+
+            const regex = new RegExp(`(${term})`, 'gi');
+            const newHtml = text.replace(regex, '<span style="background:yellow">$1</span>');
+            container.innerHTML = newHtml;
+        }
+
+        function calcInput(v) { document.getElementById('calc-display').value += v; }
+        function calcClear() { document.getElementById('calc-display').value = ''; }
+        function calcResult() {
+            try {
+                const val = document.getElementById('calc-display').value;
+                document.getElementById('calc-display').value = eval(val);
+            } catch (e) {
+                alert('Ошибка в выражении');
+            }
+        }
+    </script>
 </body>
 </html>
