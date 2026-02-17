@@ -2,295 +2,58 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Сборник задач JS</title>
+    <title>Склад техники</title>
     <style>
-        :root { --primary: #2c3e50; --accent: #3498db; --bg: #f4f4f9; }
-        body { font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; height: 100vh; background: var(--bg); }
-
-        .sidebar { width: 250px; background: var(--primary); color: white; overflow-y: auto; display: flex; flex-direction: column; }
-        .sidebar h2 { padding: 20px; margin: 0; background: #1a252f; font-size: 1.2rem; }
-        .nav-btn { background: none; border: none; color: #ecf0f1; padding: 15px 20px; text-align: left; cursor: pointer; transition: 0.3s; border-bottom: 1px solid #34495e; }
-        .nav-btn:hover, .nav-btn.active { background: var(--accent); }
-
-        .main-content { flex: 1; padding: 40px; overflow-y: auto; }
-        .task-section { display: none; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); max-width: 800px; margin: 0 auto; }
-        .task-section.active { display: block; animation: fadeIn 0.3s; }
-
-        h1 { margin-top: 0; color: var(--primary); }
-        .input-group { margin-bottom: 20px; }
-        label { display: block; margin-bottom: 8px; font-weight: bold; }
-        input, textarea, select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; font-size: 1rem; margin-bottom: 10px; }
-        button { background: var(--accent); color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 1rem; }
-        button:hover { opacity: 0.9; }
-        .result-box { margin-top: 20px; padding: 15px; background: #eef2f3; border-left: 4px solid var(--accent); border-radius: 4px; min-height: 20px; word-break: break-all; }
-
-        table.multi-table { border-collapse: collapse; width: 100%; }
-        table.multi-table td { border: 1px solid #ddd; padding: 8px; text-align: center; }
-        .highlight { background-color: #ffeaa7; font-weight: bold; }
-        .timer-display { font-size: 3rem; font-weight: bold; text-align: center; margin: 20px 0; }
-        .timer-warning { color: #e74c3c; }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        body { font-family: Arial, sans-serif; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        form { margin-top: 20px; }
+        #stats { margin-bottom: 20px; }
     </style>
 </head>
 <body>
-
-    <div class="sidebar" id="sidebar">
-        <h2>Задачи</h2>
-        <button class="nav-btn active" onclick="showTask('task1')">1. Умная сумма</button>
-        <button class="nav-btn" onclick="showTask('task2')">2. Палиндром</button>
-        <button class="nav-btn" onclick="showTask('task3')">3. Сжатие RLE</button>
-        <button class="nav-btn" onclick="showTask('task4')">4. Таблица умножения</button>
-        <button class="nav-btn" onclick="showTask('task5')">5. Генератор пароля</button>
-        <button class="nav-btn" onclick="showTask('task7')">7. Таймер экзамена</button>
-        <button class="nav-btn" onclick="showTask('task8')">8. Поиск по тексту</button>
-        <button class="nav-btn" onclick="showTask('task9')">9. Калькулятор</button>
+    <h1>Склад техники</h1>
+    <div id="stats"></div>
+    <div>
+        <input id="search" type="text" placeholder="Поиск по устройству">
+        <select id="filter">
+            <option value="">Все</option>
+            <option value="active">В наличии</option>
+            <option value="done">Выдано</option>
+            <option value="archived">Списано</option>
+        </select>
+        <select id="sort">
+            <option value="">Без сортировки</option>
+            <option value="asc">По цене (возрастанию)</option>
+            <option value="desc">По цене (убыванию)</option>
+        </select>
     </div>
-
-    <div class="main-content">
-        
-        <div id="task1" class="task-section active">
-            <h1>1. Подсчёт "умной" суммы</h1>
-            <p>Ввод: строка с числами и текстом. Суммирует только числа.</p>
-            <div class="input-group">
-                <input type="text" id="t1-input" value="10 20 abc 5 -3 2.5" placeholder="Введите данные...">
-                <button onclick="solveTask1()">Посчитать</button>
-            </div>
-            <div id="t1-result" class="result-box">Результат появится здесь</div>
-        </div>
-
-        <div id="task2" class="task-section">
-            <h1>2. Палиндром</h1>
-            <p>Проверка фразы игнорируя пробелы и регистр.</p>
-            <div class="input-group">
-                <input type="text" id="t2-input" value="А роза упала на лапу Азора">
-                <button onclick="solveTask2()">Проверить</button>
-            </div>
-            <div id="t2-result" class="result-box">Результат появится здесь</div>
-        </div>
-
-        <div id="task3" class="task-section">
-            <h1>3. Сжатие строки (RLE)</h1>
-            <p>aaabbcccc -> a3b2c4</p>
-            <div class="input-group">
-                <input type="text" id="t3-input" value="aaabbcccc">
-                <button onclick="solveTask3()">Сжать</button>
-            </div>
-            <div id="t3-result" class="result-box">...</div>
-        </div>
-
-        <div id="task4" class="task-section">
-            <h1>4. Таблица умножения N×N</h1>
-            <div class="input-group">
-                <input type="number" id="t4-input" value="5" min="1" max="20">
-                <button onclick="solveTask4()">Сгенерировать</button>
-            </div>
-            <div id="t4-result" class="result-box"></div>
-        </div>
-
-        <div id="task5" class="task-section">
-            <h1>5. Случайный пароль</h1>
-            <div class="input-group">
-                <label>Длина: <span id="pass-len-val">12</span></label>
-                <input type="range" id="t5-len" min="8" max="24" value="12" oninput="document.getElementById('pass-len-val').innerText = this.value">
-                
-                <label><input type="checkbox" id="t5-num" checked> Цифры</label>
-                <label><input type="checkbox" id="t5-sym" checked> Символы</label>
-                <label><input type="checkbox" id="t5-upper" checked> Заглавные</label>
-                <br>
-                <button onclick="solveTask5()">Создать пароль</button>
-            </div>
-            <div id="t5-result" class="result-box" style="font-family: monospace; font-size: 1.2rem;"></div>
-        </div>
-
-        <div id="task7" class="task-section">
-            <h1>7. Таймер экзамена</h1>
-            <div class="input-group">
-                <input type="number" id="t7-min" placeholder="Минуты" value="5">
-                <button onclick="startTimer()">Старт</button>
-                <button onclick="pauseTimer()" style="background:#f39c12">Пауза</button>
-                <button onclick="stopTimer()" style="background:#c0392b">Сброс</button>
-            </div>
-            <div id="t7-display" class="timer-display">00:00</div>
-            <div id="t7-msg"></div>
-        </div>
-
-        <div id="task8" class="task-section">
-            <h1>8. Поиск по странице</h1>
-            <div class="input-group">
-                <input type="text" id="t8-search" placeholder="Что ищем?">
-                <button onclick="solveTask8()">Найти</button>
-            </div>
-            <div id="t8-content" style="border:1px solid #ccc; padding:10px; max-height:200px; overflow:auto;">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ac diam sit amet quam vehicula elementum sed sit amet dui. Curabitur aliquet quam id dui posuere blandit.
-            </div>
-        </div>
-        
-        <div id="task9" class="task-section">
-             <h1>9. Калькулятор (как в телефоне)</h1>
-             <div style="width: 200px;">
-                 <input type="text" id="calc-display" readonly style="text-align: right; margin-bottom: 5px;">
-                 <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px;">
-                     <button onclick="calcInput('7')">7</button>
-                     <button onclick="calcInput('8')">8</button>
-                     <button onclick="calcInput('9')">9</button>
-                     <button onclick="calcInput('/')">/</button>
-                     
-                     <button onclick="calcInput('4')">4</button>
-                     <button onclick="calcInput('5')">5</button>
-                     <button onclick="calcInput('6')">6</button>
-                     <button onclick="calcInput('*')">*</button>
-                    
-                     <button onclick="calcInput('1')">1</button>
-                     <button onclick="calcInput('2')">2</button>
-                     <button onclick="calcInput('3')">3</button>
-                     <button onclick="calcInput('-')">-</button>
-                     
-                     <button onclick="calcInput('0')">0</button>
-                     <button onclick="calcClear()">C</button>
-                     <button onclick="calcResult()">=</button>
-                     <button onclick="calcInput('+')">+</button>
-                 </div>
-             </div>
-        </div>
-
-    </div>
-
-    <script>
-        function showTask(id) {
-            document.querySelectorAll('.task-section').forEach(el => el.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
-            event.target.classList.add('active');
-        }
-        function solveTask1() {
-            const str = document.getElementById('t1-input').value;
-            const parts = str.split(' ').map(Number).filter(n => !isNaN(n));
-            const sum = parts.reduce((a, b) => a + b, 0);
-            const avg = parts.length ? (sum / parts.length).toFixed(2) : 0;
-            document.getElementById('t1-result').innerHTML = 
-                `Сумма: <b>${sum}</b><br>Количество чисел: <b>${parts.length}</b><br>Среднее: <b>${avg}</b>`;
-        }
-        function solveTask2() {
-            const str = document.getElementById('t2-input').value;
-            const clean = str.toLowerCase().replace(/[^a-zа-яё0-9]/g, '');
-            const reverse = clean.split('').reverse().join('');
-            const isPal = clean === reverse;
-            
-            document.getElementById('t2-result').innerHTML = 
-                isPal ? `<span style="color:green">Это палиндром! ✅</span>` : `<span style="color:red">Не палиндром ❌</span>`;
-        }
-        function solveTask3() {
-            const str = document.getElementById('t3-input').value;
-            let result = '';
-            let count = 1;
-            for (let i = 0; i < str.length; i++) {
-                if (str[i] === str[i+1]) {
-                    count++;
-                } else {
-                    result += str[i] + (count > 1 ? count : '');
-                    count = 1;
-                }
-            }
-            document.getElementById('t3-result').innerText = result;
-        }
-        function solveTask4() {
-            const n = parseInt(document.getElementById('t4-input').value);
-            let html = '<table class="multi-table">';
-            for (let i = 1; i <= n; i++) {
-                html += '<tr>';
-                for (let j = 1; j <= n; j++) {
-                    const isDiag = (i === j); 
-                    html += `<td class="${isDiag ? 'highlight' : ''}">${i * j}</td>`;
-                }
-                html += '</tr>';
-            }
-            html += '</table>';
-            document.getElementById('t4-result').innerHTML = html;
-        }
-        function solveTask5() {
-            const len = document.getElementById('t5-len').value;
-            const useNum = document.getElementById('t5-num').checked;
-            const useSym = document.getElementById('t5-sym').checked;
-            const useUp = document.getElementById('t5-upper').checked;
-
-            const lower = "abcdefghijklmnopqrstuvwxyz";
-            const nums = "0123456789";
-            const syms = "!@#$%^&*()_+";
-            const upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-
-            let chars = lower;
-            if (useNum) chars += nums;
-            if (useSym) chars += syms;
-            if (useUp) chars += upper;
-
-            let pass = "";
-            for (let i = 0; i < len; i++) {
-                pass += chars.charAt(Math.floor(Math.random() * chars.length));
-            }
-
-            let strength = "Слабый";
-            if (len >= 12 && useNum && useUp) strength = "Средний";
-            if (len >= 16 && useNum && useSym && useUp) strength = "Мощный 💪";
-
-            document.getElementById('t5-result').innerHTML = `${pass} <br><small>Сила: ${strength}</small>`;
-        }
-
-        let timerInterval;
-        let totalSeconds = 0;
-
-        function startTimer() {
-            clearInterval(timerInterval);
-            const min = parseInt(document.getElementById('t7-min').value);
-            totalSeconds = min * 60;
-            updateDisplay();
-            
-            timerInterval = setInterval(() => {
-                if (totalSeconds <= 0) {
-                    clearInterval(timerInterval);
-                    document.getElementById('t7-msg').innerText = "Время вышло!";
-                    return;
-                }
-                totalSeconds--;
-                updateDisplay();
-            }, 1000);
-        }
-        function pauseTimer() { clearInterval(timerInterval); }
-        function stopTimer() { clearInterval(timerInterval); totalSeconds = 0; updateDisplay(); document.getElementById('t7-msg').innerText = ""; }
-        
-        function updateDisplay() {
-            const m = Math.floor(totalSeconds / 60).toString().padStart(2, '0');
-            const s = (totalSeconds % 60).toString().padStart(2, '0');
-            const disp = document.getElementById('t7-display');
-            disp.innerText = `${m}:${s}`;
-
-            if (totalSeconds < 300) disp.classList.add('timer-warning');
-            else disp.classList.remove('timer-warning');
-        }
-
-        function solveTask8() {
-            const term = document.getElementById('t8-search').value;
-            const container = document.getElementById('t8-content');
-            const text = container.textContent; 
-            
-            if (!term) return;
-
-            const regex = new RegExp(`(${term})`, 'gi');
-            const newHtml = text.replace(regex, '<span style="background:yellow">$1</span>');
-            container.innerHTML = newHtml;
-        }
-
-        function calcInput(v) { document.getElementById('calc-display').value += v; }
-        function calcClear() { document.getElementById('calc-display').value = ''; }
-        function calcResult() {
-            try {
-                const val = document.getElementById('calc-display').value;
-                document.getElementById('calc-display').value = eval(val);
-            } catch (e) {
-                alert('Ошибка в выражении');
-            }
-        }
-    </script>
+    <table>
+        <thead>
+            <tr>
+                <th>№</th>
+                <th>Устройство</th>
+                <th>Категория</th>
+                <th>Цена</th>
+                <th>Статус</th>
+                <th>Действия</th>
+            </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+    </table>
+    <form id="form">
+        <input id="title" type="text" placeholder="Устройство" required>
+        <input id="category" type="text" placeholder="Категория" required>
+        <input id="value" type="number" min="0" max="999999" placeholder="Цена" required>
+        <select id="status" required>
+            <option value="active">В наличии</option>
+            <option value="done">Выдано</option>
+            <option value="archived">Списано</option>
+        </select>
+        <button type="button" id="save">Сохранить</button>
+        <button type="button" id="reset">Сброс</button>
+    </form>
+    <script src="app.js"></script>
 </body>
 </html>
