@@ -3,44 +3,41 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Калькуляторы фигур</title>
+  <title>Математические калькуляторы JS</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      max-width: 520px;
+      max-width: 540px;
       margin: 30px auto;
       padding: 15px;
-      background: #f8f9fa;
+      background: #f9f9f9;
     }
-    h1 { text-align: center; color: #2c3e50; margin-bottom: 25px; }
+    h1 { text-align: center; color: #1a3c5e; margin-bottom: 25px; }
     .tabs {
       display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
       margin-bottom: 20px;
-      border-bottom: 2px solid #ddd;
     }
     .tab {
-      flex: 1;
-      padding: 12px;
-      text-align: center;
-      cursor: pointer;
-      background: #eee;
-      border: 1px solid #ddd;
-      border-bottom: none;
+      padding: 10px 14px;
+      background: #e0e0e0;
       border-radius: 6px 6px 0 0;
-      margin-right: 4px;
+      cursor: pointer;
+      user-select: none;
+      font-size: 0.95em;
     }
-    .tab:last-child { margin-right: 0; }
     .tab.active {
-      background: white;
+      background: #fff;
       font-weight: bold;
-      border-bottom: 2px solid white;
+      border-bottom: 3px solid #3498db;
     }
     .panel {
       display: none;
       background: white;
-      padding: 25px;
-      border-radius: 0 0 8px 8px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+      padding: 24px;
+      border-radius: 8px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
     }
     .panel.active { display: block; }
     input {
@@ -53,120 +50,188 @@
     button {
       width: 100%;
       padding: 12px;
-      font-size: 17px;
+      margin-top: 12px;
+      font-size: 16px;
       background: #3498db;
       color: white;
       border: none;
       border-radius: 6px;
       cursor: pointer;
-      margin-top: 12px;
     }
     button:hover { background: #2980b9; }
     .result {
       margin-top: 20px;
-      padding: 15px;
-      background: #e8f4f8;
+      padding: 16px;
+      background: #f0f8ff;
       border-radius: 6px;
-      font-size: 17px;
+      line-height: 1.5;
     }
-    .result b { color: #e74c3c; }
+    .result b { color: #d32f2f; }
+    .small { font-size: 0.9em; color: #555; }
   </style>
 </head>
 <body>
-<h1>Калькуляторы фигур</h1>
+<h1>Математические калькуляторы</h1>
 <div class="tabs">
-  <div class="tab active" onclick="showPanel(0)">Квадрат</div>
-  <div class="tab"        onclick="showPanel(1)">Прямоугольник</div>
-  <div class="tab"        onclick="showPanel(2)">Круг</div>
-  <div class="tab"        onclick="showPanel(3)">Треугольник</div>
+  <div class="tab active" onclick="show(1)">1. Корни квадратного</div>
+  <div class="tab"        onclick="show(2)">2. Тройка Пифагора</div>
+  <div class="tab"        onclick="show(3)">3. Делители числа</div>
+  <div class="tab"        onclick="show(4)">4. Общие делители</div>
+  <div class="tab"        onclick="show(5)">5. НОД</div>
+  <div class="tab"        onclick="show(6)">6. НОК</div>
 </div>
-<div class="panel active" id="panel0">
-  <label>Сторона a:</label>
-  <input type="number" id="sq_a" step="any" min="0">
-  <button onclick="calcSquare()">Посчитать</button>
-  <div class="result" id="sq_result" style="display:none;">
-    Площадь: <b id="sq_s"></b><br>
-    Периметр: <b id="sq_p"></b>
-  </div>
+<div class="panel active" id="p1">
+  <label>ax² + bx + c = 0</label>
+  <input type="number" step="any" id="a1" placeholder="a">
+  <input type="number" step="any" id="b1" placeholder="b">
+  <input type="number" step="any" id="c1" placeholder="c">
+  <button onclick="solveQuadratic()">Решить</button>
+  <div class="result" id="r1"></div>
 </div>
-<div class="panel" id="panel1">
-  <label>Длина a:</label>
-  <input type="number" id="rect_a" step="any" min="0">
-  <label>Ширина b:</label>
-  <input type="number" id="rect_b" step="any" min="0">
-  <button onclick="calcRect()">Посчитать</button>
-  <div class="result" id="rect_result" style="display:none;">
-    Площадь: <b id="rect_s"></b><br>
-    Периметр: <b id="rect_p"></b>
-  </div>
+<div class="panel" id="p2">
+  <input type="number" id="n21" placeholder="число 1">
+  <input type="number" id="n22" placeholder="число 2">
+  <input type="number" id="n23" placeholder="число 3">
+  <button onclick="checkPythagorean()">Проверить</button>
+  <div class="result" id="r2"></div>
 </div>
-<div class="panel" id="panel2">
-  <label>Радиус r:</label>
-  <input type="number" id="circ_r" step="any" min="0">
-  <button onclick="calcCircle()">Посчитать</button>
-  <div class="result" id="circ_result" style="display:none;">
-    Площадь: <b id="circ_s"></b><br>
-    Длина окружности: <b id="circ_l"></b>
-  </div>
+<div class="panel" id="p3">
+  <input type="number" id="n3" placeholder="введите целое число">
+  <button onclick="findDivisors()">Найти делители</button>
+  <div class="result" id="r3"></div>
 </div>
-<div class="panel" id="panel3">
-  <label>Сторона a:</label>
-  <input type="number" id="tri_a" step="any" min="0">
-  <label>Сторона b:</label>
-  <input type="number" id="tri_b" step="any" min="0">
-  <label>Сторона c:</label>
-  <input type="number" id="tri_c" step="any" min="0">
-  <button onclick="calcTriangle()">Посчитать</button>
-  <div class="result" id="tri_result" style="display:none;">
-    Площадь: <b id="tri_s"></b><br>
-    Периметр: <b id="tri_p"></b>
-  </div>
+<div class="panel" id="p4">
+  <input type="number" id="n41" placeholder="первое число">
+  <input type="number" id="n42" placeholder="второе число">
+  <button onclick="findCommonDivisors()">Общие делители</button>
+  <div class="result" id="r4"></div>
+</div>
+<div class="panel" id="p5">
+  <input type="number" id="n51" placeholder="первое число">
+  <input type="number" id="n52" placeholder="второе число">
+  <button onclick="findGCD()">НОД</button>
+  <div class="result" id="r5"></div>
+</div>
+<div class="panel" id="p6">
+  <input type="number" id="n61" placeholder="первое число">
+  <input type="number" id="n62" placeholder="второе число">
+  <button onclick="findLCM()">НОК</button>
+  <div class="result" id="r6"></div>
 </div>
 <script>
-function showPanel(n) {
+function show(n) {
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.getElementById('panel'+n).classList.add('active');
-  document.querySelectorAll('.tab')[n].classList.add('active');
+  document.getElementById('p'+n).classList.add('active');
+  document.querySelectorAll('.tab')[n-1].classList.add('active');
 }
-function showResult(id) {
-  document.getElementById(id).style.display = 'block';
+function solveQuadratic() {
+  let a = Number(document.getElementById('a1').value);
+  let b = Number(document.getElementById('b1').value);
+  let c = Number(document.getElementById('c1').value);
+  let res = document.getElementById('r1');
+  if (a === 0) {
+    res.innerHTML = "Коэффициент a не может быть равен нулю";
+    return;
+  }
+  let D = b*b - 4*a*c;
+  if (D < 0) {
+    res.innerHTML = "Дискриминант <b>D = " + D + "</b><br>Корней нет (комплексные)";
+  } else if (D === 0) {
+    let x = -b / (2*a);
+    res.innerHTML = "Один корень (кратный):<br><b>x = " + x.toFixed(4) + "</b>";
+  } else {
+    let x1 = (-b + Math.sqrt(D)) / (2*a);
+    let x2 = (-b - Math.sqrt(D)) / (2*a);
+    res.innerHTML = "Два корня:<br><b>x₁ = " + x1.toFixed(4) + "<br>x₂ = " + x2.toFixed(4) + "</b>";
+  }
 }
-function calcSquare() {
-  let a = +document.getElementById('sq_a').value;
-  if (a <= 0 || !a) return alert('Сторона должна быть > 0');
-  document.getElementById('sq_s').textContent = (a * a).toFixed(2);
-  document.getElementById('sq_p').textContent = (a * 4).toFixed(2);
-  showResult('sq_result');
+function checkPythagorean() {
+  let nums = [
+    Number(document.getElementById('n21').value),
+    Number(document.getElementById('n22').value),
+    Number(document.getElementById('n23').value)
+  ].filter(n => !isNaN(n) && n !== 0);
+  let res = document.getElementById('r2');
+  if (nums.length !== 3) {
+    res.innerHTML = "Введите три ненулевых числа";
+    return;
+  }
+  nums.sort((a,b)=>a-b);
+  let [a,b,c] = nums;
+  let isPyth = (a*a + b*b === c*c);
+  res.innerHTML = isPyth
+    ? `<b>Да</b> — это тройка Пифагора<br>${a}² + ${b}² = ${c}²`
+    : `<b>Нет</b><br>${a}² + ${b}² = ${a*a + b*b} ≠ ${c}²`;
 }
-function calcRect() {
-  let a = +document.getElementById('rect_a').value;
-  let b = +document.getElementById('rect_b').value;
-  if (a <= 0 || b <= 0 || !a || !b) return alert('Обе стороны > 0');
-  document.getElementById('rect_s').textContent = (a * b).toFixed(2);
-  document.getElementById('rect_p').textContent = (2 * (a + b)).toFixed(2);
-  showResult('rect_result');
+function findDivisors() {
+  let n = Math.abs(Math.round(Number(document.getElementById('n3').value)));
+  let res = document.getElementById('r3');
+  if (n < 1 || isNaN(n)) {
+    res.innerHTML = "Введите целое число больше 0";
+    return;
+  }
+  let divs = [];
+  for (let i = 1; i*i <= n; i++) {
+    if (n % i === 0) {
+      divs.push(i);
+      if (i !== n/i) divs.push(n/i);
+    }
+  }
+  divs.sort((a,b)=>a-b);
+  res.innerHTML = `Делители числа <b>${n}</b>:<br>` + divs.join(", ");
 }
-function calcCircle() {
-  let r = +document.getElementById('circ_r').value;
-  if (r <= 0 || !r) return alert('Радиус > 0');
-  document.getElementById('circ_s').textContent = (Math.PI * r * r).toFixed(2);
-  document.getElementById('circ_l').textContent = (2 * Math.PI * r).toFixed(2);
-  showResult('circ_result');
+function findCommonDivisors() {
+  let a = Math.abs(Math.round(Number(document.getElementById('n41').value)));
+  let b = Math.abs(Math.round(Number(document.getElementById('n42').value)));
+  let res = document.getElementById('r4');
+  if (a < 1 || b < 1 || isNaN(a) || isNaN(b)) {
+    res.innerHTML = "Введите два целых положительных числа";
+    return;
+  }
+  let divs = [];
+  let min = Math.min(a, b);
+  for (let i = 1; i <= min; i++) {
+    if (a % i === 0 && b % i === 0) {
+      divs.push(i);
+    }
+  }
+  res.innerHTML = divs.length > 0
+    ? `Общие делители: <b>${divs.join(", ")}</b>`
+    : "Общих делителей нет (кроме 1)";
 }
-function calcTriangle() {
-  let a = +document.getElementById('tri_a').value;
-  let b = +document.getElementById('tri_b').value;
-  let c = +document.getElementById('tri_c').value;
-  if (a <= 0 || b <= 0 || c <= 0 || !a || !b || !c)
-    return alert('Все стороны > 0');
-  if (a + b <= c || a + c <= b || b + c <= a)
-    return alert('Нарушено неравенство треугольника');
-  let p = (a + b + c) / 2;
-  let area = Math.sqrt(p * (p - a) * (p - b) * (p - c));
-  document.getElementById('tri_s').textContent = area.toFixed(2);
-  document.getElementById('tri_p').textContent = (a + b + c).toFixed(2);
-  showResult('tri_result');
+function gcd(x, y) {
+  x = Math.abs(x);
+  y = Math.abs(y);
+  while (y) {
+    let t = y;
+    y = x % y;
+    x = t;
+  }
+  return x;
+}
+function findGCD() {
+  let a = Number(document.getElementById('n51').value);
+  let b = Number(document.getElementById('n52').value);
+  let res = document.getElementById('r5');
+  if (isNaN(a) || isNaN(b)) {
+    res.innerHTML = "Введите два числа";
+    return;
+  }
+  let d = gcd(a, b);
+  res.innerHTML = `Наибольший общий делитель = <b>${d}</b>`;
+}
+function findLCM() {
+  let a = Math.abs(Number(document.getElementById('n61').value));
+  let b = Math.abs(Number(document.getElementById('n62').value));
+  let res = document.getElementById('r6');
+  if (a === 0 || b === 0 || isNaN(a) || isNaN(b)) {
+    res.innerHTML = "Введите два ненулевых числа";
+    return;
+  }
+  let d = gcd(a, b);
+  let lcm = (a / d) * b;   
+  res.innerHTML = `Наименьшее общее кратное = <b>${lcm}</b>`;
 }
 </script>
 </body>
