@@ -2,102 +2,104 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Игра: Угадай ячейку</title>
+    <title>Экранная клавиатура</title>
     <style>
-        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; }
-        #field td {
-            width: 35px;
-            height: 35px;
-            border: 1px solid #444;
-            text-align: center;
+        body {
+            font-family: sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 50px;
+            background-color: #f4f4f9;
+        }
+        #display {
+            width: 580px;
+            padding: 15px;
+            font-size: 20px;
+            margin-bottom: 20px;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            outline: none;
+        }
+        .keyboard {
+            display: grid;
+            grid-template-columns: repeat(10, 55px);
+            gap: 8px;
+            background: #333;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        button {
+            height: 50px;
             cursor: pointer;
+            background: #fff;
+            border: none;
+            border-radius: 4px;
+            font-size: 18px;
+            font-weight: bold;
             transition: background 0.2s;
         }
-        .hit { background-color: #ff4d4d !important; } 
-        .miss { background-color: #bdc3c7; }           
-        .target { } 
-        #timer { font-size: 1.5rem; margin: 10px; color: #e74c3c; font-weight: bold; }
-        #message { font-size: 1.2rem; margin-top: 10px; height: 30px; }
-        .win { color: #27ae60; font-weight: bold; }
-        .lose { color: #c0392b; font-weight: bold; }
+        button:active {
+            background: #ddd;
+            transform: translateY(2px);
+        }
+        .wide {
+            grid-column: span 2;
+            background: #e0e0e0;
+        }
+        .caps-active {
+            background: #ff9800 !important;
+            color: white;
+        }
+        .backspace {
+            background: #ff5252;
+            color: white;
+        }
     </style>
 </head>
 <body>
-    <div id="timer">Осталось времени: 60</div>
-    <table id="field"></table>
-    <div id="message"></div>
-    <button onclick="location.reload()" style="margin-top: 15px; padding: 10px 20px; cursor: pointer;">Начать заново</button>
+    <input type="text" id="display" placeholder="Нажимайте на клавиши...">
+    <div id="keyboard" class="keyboard"></div>
     <script>
-        const field = document.querySelector('#field');
-        const message = document.querySelector('#message');
-        const timerDisplay = document.querySelector('#timer');
-        const size = 10;      
-        const totalTargets = 10;   
-        let foundCount = 0;       
-        let timeLeft = 60;       
-        let isGameOver = false;
-        function createField() {
-            for (let i = 0; i < size; i++) {
-                let tr = document.createElement('tr');
-                for (let j = 0; j < size; j++) {
-                    let td = document.createElement('td');
-                    td.addEventListener('click', cellClickHandler);
-                    tr.appendChild(td);
+        const keyboardContainer = document.querySelector('#keyboard');
+        const inputField = document.querySelector('#display');
+        const keys = [
+            '1', '2', '3', '4', '5', '6', '7', '8', '9', '0',
+            'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p',
+            'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';',
+            'caps', 'z', 'x', 'c', 'v', 'b', 'n', 'm', 'backspace'
+        ];
+        let isCaps = false;
+        function renderKeyboard() {
+            keyboardContainer.innerHTML = '';
+            keys.forEach(key => {
+                const btn = document.createElement('button');
+                if (key === 'caps') {
+                    btn.textContent = 'Caps';
+                    btn.classList.add('wide');
+                    if (isCaps) btn.classList.add('caps-active');
+                } else if (key === 'backspace') {
+                    btn.textContent = '←';
+                    btn.classList.add('wide', 'backspace');
+                } else {
+                    btn.textContent = isCaps ? key.toUpperCase() : key.toLowerCase();
                 }
-                field.appendChild(tr);
-            }
-        }
-        function setTargets() {
-            let tds = document.querySelectorAll('#field td');
-            let placed = 0;
-            while (placed < totalTargets) {
-                let randomIndex = Math.floor(Math.random() * tds.length);
-                if (!tds[randomIndex].classList.contains('target')) {
-                    tds[randomIndex].classList.add('target');
-                    placed++;
-                }
-            }
-        }
-        function cellClickHandler() {
-            if (isGameOver || this.classList.contains('hit') || this.classList.contains('miss')) {
-                return; 
-            }
-            if (this.classList.contains('target')) {
-                this.classList.add('hit');
-                foundCount++;
-                if (foundCount === totalTargets) {
-                    victory();
-                }
-            } else {
-                this.classList.add('miss');
-            }
-        }
-        let timerId = setInterval(() => {
-            timeLeft--;
-            timerDisplay.textContent = `Осталось времени: ${timeLeft}`;
-            if (timeLeft <= 0) {
-                gameOver();
-            }
-        }, 1000);
-        function victory() {
-            isGameOver = true;
-            clearInterval(timerId);
-            message.textContent = 'Поздравляем! Вы нашли все ячейки!';
-            message.className = 'win';
-        }
-        function gameOver() {
-            isGameOver = true;
-            clearInterval(timerId);
-            message.textContent = 'Время вышло! Вы проиграли.';
-            message.className = 'lose';
-            document.querySelectorAll('.target').forEach(td => {
-                if (!td.classList.contains('hit')) {
-                    td.style.backgroundColor = '#f39c12';
-                }
+                btn.onclick = () => {
+                    if (key === 'caps') {
+                        isCaps = !isCaps;
+                        renderKeyboard(); 
+                    } else if (key === 'backspace') {
+                        inputField.value = inputField.value.slice(0, -1);
+                    } else {
+                        inputField.value += btn.textContent;
+                    }
+                    inputField.focus(); 
+                };
+                keyboardContainer.appendChild(btn);
             });
         }
-        createField();
-        setTargets();
+        renderKeyboard();
     </script>
 </body>
 </html>
