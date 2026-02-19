@@ -1,124 +1,173 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Менеджер задач студента</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        h1 {
-            text-align: center;
-        }
-        #task-input {
-            width: 70%;
-            padding: 10px;
-            margin-right: 10px;
-        }
-        #add-button {
-            padding: 10px 20px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-        #add-button:hover {
-            background-color: #45a049;
-        }
-        #task-list {
-            list-style-type: none;
-            padding: 0;
-        }
-        .task-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px;
-            margin: 10px 0;
-            background-color: #f9f9f9;
-            border: 1px solid #ddd;
-        }
-        .task-item.completed {
-            text-decoration: line-through;
-            color: gray;
-        }
-        .delete-button {
-            background-color: #f54438;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            cursor: pointer;
-        }
-        .delete-button:hover {
-            background-color: #f54438;
-        }
-        #task-count {
-            text-align: center;
-            font-weight: bold;
-            margin-top: 20px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Калькуляторы фигур</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 520px;
+      margin: 30px auto;
+      padding: 15px;
+      background: #f8f9fa;
+    }
+    h1 { text-align: center; color: #2c3e50; margin-bottom: 25px; }
+    .tabs {
+      display: flex;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #ddd;
+    }
+    .tab {
+      flex: 1;
+      padding: 12px;
+      text-align: center;
+      cursor: pointer;
+      background: #eee;
+      border: 1px solid #ddd;
+      border-bottom: none;
+      border-radius: 6px 6px 0 0;
+      margin-right: 4px;
+    }
+    .tab:last-child { margin-right: 0; }
+    .tab.active {
+      background: white;
+      font-weight: bold;
+      border-bottom: 2px solid white;
+    }
+    .panel {
+      display: none;
+      background: white;
+      padding: 25px;
+      border-radius: 0 0 8px 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    }
+    .panel.active { display: block; }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      box-sizing: border-box;
+      font-size: 16px;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      font-size: 17px;
+      background: #3498db;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 12px;
+    }
+    button:hover { background: #2980b9; }
+    .result {
+      margin-top: 20px;
+      padding: 15px;
+      background: #e8f4f8;
+      border-radius: 6px;
+      font-size: 17px;
+    }
+    .result b { color: #e74c3c; }
+  </style>
 </head>
 <body>
-    <h1>Менеджер задач студента</h1>
-    <input type="text" id="task-input" placeholder="Введите новую задачу">
-    <button id="add-button">Добавить</button>
-    <ul id="task-list"></ul>
-    <p id="task-count">Задач: 0</p>
-    <script>
-        let tasks = [];
-        const taskInput = document.getElementById('task-input');
-        const addButton = document.getElementById('add-button');
-        const taskList = document.getElementById('task-list');
-        const taskCount = document.getElementById('task-count');
-        function updateTaskList() {
-            taskList.innerHTML = ''; 
-            if (tasks.length === 0) {
-                taskCount.textContent = 'Задач: 0';
-                return;
-            }
-            for (let i = 0; i < tasks.length; i++) {
-                const task = tasks[i];
-                const li = document.createElement('li');
-                li.classList.add('task-item');
-                if (task.completed) {
-                    li.classList.add('completed');
-                }
-                const taskText = document.createElement('span');
-                taskText.textContent = task.text;
-                const checkbox = document.createElement('input');
-                checkbox.type = 'checkbox';
-                checkbox.checked = task.completed;
-                checkbox.addEventListener('change', function() {
-                    tasks[i].completed = this.checked;
-                    updateTaskList();
-                });
-                li.appendChild(checkbox);
-                li.appendChild(taskText);
-                const deleteButton = document.createElement('button');
-                deleteButton.textContent = 'Удалить';
-                deleteButton.classList.add('delete-button');
-                deleteButton.addEventListener('click', function() {
-                    tasks.splice(i, 1);
-                    updateTaskList();
-                });
-                li.appendChild(deleteButton);
-                taskList.appendChild(li);
-            }
-            taskCount.textContent = 'Задач: ' + tasks.length;
-        }
-        addButton.addEventListener('click', function() {
-            const taskText = taskInput.value.trim();
-            if (taskText !== '') {
-                tasks.push({ text: taskText, completed: false });
-                taskInput.value = '';
-                updateTaskList();
-            }
-        });
-    </script>
+<h1>Калькуляторы фигур</h1>
+<div class="tabs">
+  <div class="tab active" onclick="showPanel(0)">Квадрат</div>
+  <div class="tab"        onclick="showPanel(1)">Прямоугольник</div>
+  <div class="tab"        onclick="showPanel(2)">Круг</div>
+  <div class="tab"        onclick="showPanel(3)">Треугольник</div>
+</div>
+<div class="panel active" id="panel0">
+  <label>Сторона a:</label>
+  <input type="number" id="sq_a" step="any" min="0">
+  <button onclick="calcSquare()">Посчитать</button>
+  <div class="result" id="sq_result" style="display:none;">
+    Площадь: <b id="sq_s"></b><br>
+    Периметр: <b id="sq_p"></b>
+  </div>
+</div>
+<div class="panel" id="panel1">
+  <label>Длина a:</label>
+  <input type="number" id="rect_a" step="any" min="0">
+  <label>Ширина b:</label>
+  <input type="number" id="rect_b" step="any" min="0">
+  <button onclick="calcRect()">Посчитать</button>
+  <div class="result" id="rect_result" style="display:none;">
+    Площадь: <b id="rect_s"></b><br>
+    Периметр: <b id="rect_p"></b>
+  </div>
+</div>
+<div class="panel" id="panel2">
+  <label>Радиус r:</label>
+  <input type="number" id="circ_r" step="any" min="0">
+  <button onclick="calcCircle()">Посчитать</button>
+  <div class="result" id="circ_result" style="display:none;">
+    Площадь: <b id="circ_s"></b><br>
+    Длина окружности: <b id="circ_l"></b>
+  </div>
+</div>
+<div class="panel" id="panel3">
+  <label>Сторона a:</label>
+  <input type="number" id="tri_a" step="any" min="0">
+  <label>Сторона b:</label>
+  <input type="number" id="tri_b" step="any" min="0">
+  <label>Сторона c:</label>
+  <input type="number" id="tri_c" step="any" min="0">
+  <button onclick="calcTriangle()">Посчитать</button>
+  <div class="result" id="tri_result" style="display:none;">
+    Площадь: <b id="tri_s"></b><br>
+    Периметр: <b id="tri_p"></b>
+  </div>
+</div>
+<script>
+function showPanel(n) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('panel'+n).classList.add('active');
+  document.querySelectorAll('.tab')[n].classList.add('active');
+}
+function showResult(id) {
+  document.getElementById(id).style.display = 'block';
+}
+function calcSquare() {
+  let a = +document.getElementById('sq_a').value;
+  if (a <= 0 || !a) return alert('Сторона должна быть > 0');
+  document.getElementById('sq_s').textContent = (a * a).toFixed(2);
+  document.getElementById('sq_p').textContent = (a * 4).toFixed(2);
+  showResult('sq_result');
+}
+function calcRect() {
+  let a = +document.getElementById('rect_a').value;
+  let b = +document.getElementById('rect_b').value;
+  if (a <= 0 || b <= 0 || !a || !b) return alert('Обе стороны > 0');
+  document.getElementById('rect_s').textContent = (a * b).toFixed(2);
+  document.getElementById('rect_p').textContent = (2 * (a + b)).toFixed(2);
+  showResult('rect_result');
+}
+function calcCircle() {
+  let r = +document.getElementById('circ_r').value;
+  if (r <= 0 || !r) return alert('Радиус > 0');
+  document.getElementById('circ_s').textContent = (Math.PI * r * r).toFixed(2);
+  document.getElementById('circ_l').textContent = (2 * Math.PI * r).toFixed(2);
+  showResult('circ_result');
+}
+function calcTriangle() {
+  let a = +document.getElementById('tri_a').value;
+  let b = +document.getElementById('tri_b').value;
+  let c = +document.getElementById('tri_c').value;
+  if (a <= 0 || b <= 0 || c <= 0 || !a || !b || !c)
+    return alert('Все стороны > 0');
+  if (a + b <= c || a + c <= b || b + c <= a)
+    return alert('Нарушено неравенство треугольника');
+  let p = (a + b + c) / 2;
+  let area = Math.sqrt(p * (p - a) * (p - b) * (p - c));
+  document.getElementById('tri_s').textContent = area.toFixed(2);
+  document.getElementById('tri_p').textContent = (a + b + c).toFixed(2);
+  showResult('tri_result');
+}
+</script>
 </body>
 </html>
