@@ -1,129 +1,103 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Угадай число</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f0f4f8;
-      display: flex;
-      justify-content: center;
-      padding: 40px 20px;
-    }
-    .game {
-      background: white;
-      padding: 32px;
-      border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.12);
-      width: 100%;
-      max-width: 420px;
-      text-align: center;
-    }
-    h1 {
-      color: #1a3c5e;
-      margin-bottom: 24px;
-    }
-    input {
-      width: 140px;
-      padding: 12px;
-      font-size: 22px;
-      text-align: center;
-      border: 2px solid #bdc3c7;
-      border-radius: 8px;
-      margin: 16px 0;
-    }
-    input:focus {
-      outline: none;
-      border-color: #3498db;
-      box-shadow: 0 0 0 3px rgba(52,152,219,0.2);
-    }
-    button {
-      padding: 12px 32px;
-      font-size: 18px;
-      background: #2ecc71;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      margin: 8px;
-    }
-    button:hover {
-      background: #27ae60;
-    }
-    #message {
-      min-height: 60px;
-      font-size: 18px;
-      margin: 20px 0;
-      font-weight: bold;
-    }
-    .success  { color: #27ae60; }
-    .error    { color: #e74c3c; }
-    .info     { color: #3498db; }
-    #attempts {
-      font-size: 15px;
-      color: #7f8c8d;
-      margin-top: 16px;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <title>Игра: Угадай ячейку</title>
+    <style>
+        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; }
+        #field td {
+            width: 35px;
+            height: 35px;
+            border: 1px solid #444;
+            text-align: center;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .hit { background-color: #ff4d4d !important; } 
+        .miss { background-color: #bdc3c7; }           
+        .target { } 
+        #timer { font-size: 1.5rem; margin: 10px; color: #e74c3c; font-weight: bold; }
+        #message { font-size: 1.2rem; margin-top: 10px; height: 30px; }
+        .win { color: #27ae60; font-weight: bold; }
+        .lose { color: #c0392b; font-weight: bold; }
+    </style>
 </head>
 <body>
-<div class="game">
-  <h1>Угадай число</h1>
-  <p>Я загадал число от 1 до 100.<br>Попробуй угадать!</p>
-  <input type="number" id="guess" min="1" max="100" placeholder="1–100">
-  <br>
-  <button onclick="checkGuess()">Проверить</button>
-  <button onclick="newGame()" style="background:#95a5a6;">Новая игра</button>
-  <div id="message"></div>
-  <div id="attempts">Попыток: 0</div>
-</div>
-<script>
-let secretNumber = Math.floor(Math.random() * 100) + 1;
-let attempts = 0;
-function checkGuess() {
-  const input = document.getElementById("guess");
-  const message = document.getElementById("message");
-  const attemptsEl = document.getElementById("attempts");
-  let guess = Number(input.value);
-  if (isNaN(guess) || guess < 1 || guess > 100) {
-    message.textContent = "Введи число от 1 до 100!";
-    message.className = "error";
-    return;
-  }
-  attempts++;
-  attemptsEl.textContent = `Попыток: ${attempts}`;
-  if (guess === secretNumber) {
-    message.textContent = `Поздравляю! Ты угадал за ${attempts} попыток! 🎉`;
-    message.className = "success";
-    input.disabled = true;
-  }
-  else if (guess < secretNumber) {
-    message.textContent = "Слишком мало! Бери выше ↑";
-    message.className = "info";
-  }
-  else {
-    message.textContent = "Слишком много! Бери ниже ↓";
-    message.className = "info";
-  }
-  input.value = "";
-  input.focus();
-}
-function newGame() {
-  secretNumber = Math.floor(Math.random() * 100) + 1;
-  attempts = 0;
-  document.getElementById("guess").disabled = false;
-  document.getElementById("guess").value = "";
-  document.getElementById("message").textContent = "";
-  document.getElementById("attempts").textContent = "Попыток: 0";
-  document.getElementById("guess").focus();
-}
-document.getElementById("guess").addEventListener("keypress", function(e) {
-  if (e.key === "Enter") {
-    checkGuess();
-  }
-});
-</script>
+    <div id="timer">Осталось времени: 60</div>
+    <table id="field"></table>
+    <div id="message"></div>
+    <button onclick="location.reload()" style="margin-top: 15px; padding: 10px 20px; cursor: pointer;">Начать заново</button>
+    <script>
+        const field = document.querySelector('#field');
+        const message = document.querySelector('#message');
+        const timerDisplay = document.querySelector('#timer');
+        const size = 10;      
+        const totalTargets = 10;   
+        let foundCount = 0;       
+        let timeLeft = 60;       
+        let isGameOver = false;
+        function createField() {
+            for (let i = 0; i < size; i++) {
+                let tr = document.createElement('tr');
+                for (let j = 0; j < size; j++) {
+                    let td = document.createElement('td');
+                    td.addEventListener('click', cellClickHandler);
+                    tr.appendChild(td);
+                }
+                field.appendChild(tr);
+            }
+        }
+        function setTargets() {
+            let tds = document.querySelectorAll('#field td');
+            let placed = 0;
+            while (placed < totalTargets) {
+                let randomIndex = Math.floor(Math.random() * tds.length);
+                if (!tds[randomIndex].classList.contains('target')) {
+                    tds[randomIndex].classList.add('target');
+                    placed++;
+                }
+            }
+        }
+        function cellClickHandler() {
+            if (isGameOver || this.classList.contains('hit') || this.classList.contains('miss')) {
+                return; 
+            }
+            if (this.classList.contains('target')) {
+                this.classList.add('hit');
+                foundCount++;
+                if (foundCount === totalTargets) {
+                    victory();
+                }
+            } else {
+                this.classList.add('miss');
+            }
+        }
+        let timerId = setInterval(() => {
+            timeLeft--;
+            timerDisplay.textContent = `Осталось времени: ${timeLeft}`;
+            if (timeLeft <= 0) {
+                gameOver();
+            }
+        }, 1000);
+        function victory() {
+            isGameOver = true;
+            clearInterval(timerId);
+            message.textContent = 'Поздравляем! Вы нашли все ячейки!';
+            message.className = 'win';
+        }
+        function gameOver() {
+            isGameOver = true;
+            clearInterval(timerId);
+            message.textContent = 'Время вышло! Вы проиграли.';
+            message.className = 'lose';
+            document.querySelectorAll('.target').forEach(td => {
+                if (!td.classList.contains('hit')) {
+                    td.style.backgroundColor = '#f39c12';
+                }
+            });
+        }
+        createField();
+        setTargets();
+    </script>
 </body>
 </html>
