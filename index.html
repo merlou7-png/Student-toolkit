@@ -1,108 +1,109 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <title>Игра в города</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      max-width: 700px;
-      margin: 30px auto;
-      padding: 0 20px;
-    }
-    #turn {
-      font-size: 1.3em;
-      font-weight: bold;
-      margin: 20px 0;
-      color: #2c3e50;
-    }
-    #field {
-      width: 100%;
-      padding: 12px;
-      font-size: 1.2em;
-      box-sizing: border-box;
-      margin-bottom: 10px;
-    }
-    #message {
-      min-height: 80px;
-      padding: 15px;
-      border-radius: 6px;
-      background: #f8f9fa;
-      line-height: 1.5;
-    }
-    .success { background: #e8f5e9; color: #2e7d32; }
-    .error   { background: #ffebee; color: #c62828; }
-    .info    { background: #e3f2fd; color: #1565c0; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Игра в Города на JS</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .game-container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+        h1 { color: #1a73e8; font-size: 24px; margin-bottom: 20px; }
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+        }
+        input:focus { border-color: #1a73e8; outline: none; }
+        #message {
+            margin: 15px 0;
+            min-height: 20px;
+            font-weight: 500;
+        }
+        .error { color: #d93025; }
+        .success { color: #188038; }
+        #city-list {
+            margin-top: 20px;
+            text-align: left;
+            font-size: 14px;
+            color: #5f6368;
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+            max-height: 100px;
+            overflow-y: auto;
+        }
+    </style>
 </head>
 <body>
-  <h1>Игра в города</h1>
-  <div id="turn">Ход игрока 1 — назовите любой город</div>
-  <input id="field" placeholder="Введите город и нажмите Enter" autocomplete="off">
-  <div id="message" class="info">Игрок 1 начинает. Назови любой реальный город.</div>
-  <script>
-    const field   = document.querySelector('#field');
-    const message = document.querySelector('#message');
-    const turn    = document.querySelector('#turn');
-    let used = new Set();               
-    let currentPlayer = 1;
-    let lastLetter = null;              
-    function getEndLetter(city) {
-      let str = city.toLowerCase().trim();
-      let last = str[str.length - 1];
-      if ('ьъы'.includes(last) && str.length > 1) {
-        return str[str.length - 2];
-      }
-      return last;
-    }
-    function showMessage(text, type = 'info') {
-      message.textContent = text;
-      message.className = type; 
-    }
-    function updateTurnDisplay() {
-      let letterText = lastLetter ? ` (на «${lastLetter}»)` : '';
-      turn.textContent = `Ход игрока ${currentPlayer}${letterText}`;
-    }
-    field.addEventListener('keydown', function(e) {
-      if (e.key !== 'Enter') return;
-      e.preventDefault();
-      let city = field.value.trim();
-      if (!city) {
-        showMessage('Введите город!', 'error');
-        return;
-      }
-      let cityLower = city.toLowerCase();
-      if (['стоп', 'сдаюсь', 'хватит', 'конец'].includes(cityLower)) {
-        showMessage(`Игрок ${currentPlayer} сдался. Побеждает игрок ${currentPlayer === 1 ? 2 : 1}!`, 'success');
-        field.disabled = true;
-        turn.textContent = 'Игра окончена';
-        return;
-      }
-      if (city.length < 2) {
-        showMessage('Название города должно содержать хотя бы 2 буквы', 'error');
-        return;
-      }
-      if (used.has(cityLower)) {
-        showMessage('Этот город уже называли!', 'error');
-        return;
-      }
-      if (lastLetter !== null) {
-        let firstLetter = cityLower[0];
-        if (firstLetter !== lastLetter) {
-          showMessage(`Нужно назвать город на букву «${lastLetter}»`, 'error');
-          return;
+<div class="game-container">
+    <h1>Города</h1>
+    <p>Введите город и нажмите <strong>Enter</strong></p>
+    <input type="text" id="cityInput" placeholder="Например: Москва" autocomplete="off">
+    <div id="message"></div>
+    <div id="city-list">
+        <strong>Использованные города:</strong>
+        <div id="citiesArray">Пока пусто</div>
+    </div>
+</div>
+<script>
+    let cities = [];
+    const input = document.getElementById('cityInput');
+    const message = document.getElementById('message');
+    const displayList = document.getElementById('citiesArray');
+    input.addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+            const currentCity = input.value.trim();
+            if (currentCity === "") return;
+            if (cities.length === 0) {
+                addCity(currentCity);
+            } else {
+                const lastCity = cities[cities.length - 1];
+                let lastLetter = lastCity.slice(-1).toLowerCase();
+                if (['ь', 'ы', 'ъ'].includes(lastLetter)) {
+                    lastLetter = lastCity.slice(-2, -1).toLowerCase();
+                }
+                const firstLetter = currentCity[0].toLowerCase();
+                if (cities.map(c => c.toLowerCase()).includes(currentCity.toLowerCase())) {
+                    showMessage("Этот город уже был!", "error");
+                } 
+                else if (firstLetter !== lastLetter) {
+                    showMessage(`Ошибка! Нужно на букву "${lastLetter.toUpperCase()}"`, "error");
+                } 
+                else {
+                    addCity(currentCity);
+                }
+            }
+            input.value = ""; 
         }
-      }
-      used.add(cityLower);
-      lastLetter = getEndLetter(city);
-      showMessage(`Игрок ${currentPlayer}: ${city}`, 'success');
-      currentPlayer = currentPlayer === 1 ? 2 : 1;
-      field.value = '';
-      field.focus();
-      updateTurnDisplay();
     });
-    field.focus();
-  </script>
-
+    function addCity(city) {
+        cities.push(city);
+        displayList.textContent = cities.join(' → ');
+        showMessage("Принято!", "success");
+    }
+    function showMessage(text, type) {
+        message.textContent = text;
+        message.className = type;
+    }
+</script>
 </body>
 </html>
