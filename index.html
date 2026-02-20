@@ -2,78 +2,91 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Чеклист с кнопками</title>
+    <title>Города против Робота</title>
     <style>
-        body {
-            text-align: center;
-            font-family: Arial, sans-serif;
-            padding-top: 30px;
-        }
-        #input, #list {
-            display: inline-block;
-        }
-        #list {
-            padding: 0;
-            list-style-type: none;
-            display: block;
-            margin-top: 20px;
-        }
-        #list span {
-            margin-right: 10px;
-        }
-        #list .remove, #list .mark {
-            color: blue;
-            cursor: pointer;
-            font-size: 0.8em;
-        }
-        #list .remove:hover, #list .mark:hover {
-            text-decoration: underline;
-        }
-        .done {
-            text-decoration: line-through;
-            color: gray;
-        }
-        li {
-            margin-bottom: 10px;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 5px;
-            width: fit-content;
-            margin-left: auto;
-            margin-right: auto;
-        }
+        body { font-family: sans-serif; text-align: center; padding-top: 50px; background: #f0f2f5; }
+        .container { background: white; padding: 20px; border-radius: 10px; display: inline-block; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 350px; }
+        input { width: 80%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px; }
+        #message { height: 40px; margin: 10px 0; font-weight: bold; }
+        .error { color: #d93025; }
+        .success { color: #188038; }
+        #history { border-top: 1px solid #eee; padding-top: 10px; font-size: 0.9em; color: #555; text-align: left; }
     </style>
 </head>
 <body>
-    <input id="input" placeholder="Введите задачу...">
-    <ul id="list"></ul>
-    <script>
-        let input = document.querySelector('#input');
-        let list = document.querySelector('#list');
-        input.addEventListener('keypress', function(event) {
-            if (event.key == 'Enter' && this.value.trim() !== '') {
-                let li = document.createElement('li');
-                let task = document.createElement('span');
-                task.classList.add('task');
-                task.textContent = this.value;
-                li.appendChild(task);
-                let remove = document.createElement('span');
-                remove.classList.add('remove');
-                remove.textContent = 'удалить';
-                remove.addEventListener('click', function() {
-                    li.remove(); 
-                });
-                li.appendChild(remove);
-                let mark = document.createElement('span');
-                mark.classList.add('mark');
-                mark.textContent = 'сделано';
-                mark.addEventListener('click', function() {
-                    task.classList.toggle('done');
-                });
-                li.appendChild(mark);
-                list.appendChild(li);
+<div class="container">
+    <h2>Человек vs Робот</h2>
+    <input id="input" placeholder="Введите ваш город..." autofocus>
+    <div id="message">Начинайте игру!</div>
+    <div id="history"><strong>Ходы:</strong> <span id="list">...</span></div>
+</div>
+<script>
+    let allCities = ['Абакан', 'Архангельск', 'Брянск', 'Белгород', 'Владивосток', 'Владимир', 'Грозный', 'Донецк', 'Екатеринбург', 'Елец', 'Железногорск', 'Зеленоград', 'Иркутск', 'Иваново', 'Казань', 'Керчь', 'Липецк', 'Москва', 'Мурманск', 'Новгород', 'Омск', 'Орел', 'Пенза', 'Псков', 'Ростов', 'Рязань', 'Самара', 'Саратов', 'Тверь', 'Тула', 'Уфа', 'Ульяновск', 'Хабаровск', 'Челябинск', 'Чита', 'Элиста', 'Южно-Сахалинск', 'Якутск', 'Ярославль'];
+    let usedCities = [];
+    let input = document.querySelector('#input');
+    let message = document.querySelector('#message');
+    let list = document.querySelector('#list');
+    input.addEventListener('keypress', function(event) {
+        if (event.key == 'Enter') {
+            let userCity = this.value.trim();
+            if (userCity === '') return;
+            if (processPlayerMove(userCity)) {
                 this.value = '';
+                setTimeout(robotMove, 800);
             }
-        });
-    </script>
+        }
+    });
+    function processPlayerMove(city) {
+        let cityLower = city.toLowerCase();
+        if (!allCities.map(c => c.toLowerCase()).includes(cityLower)) {
+            showMessage("Я не знаю такого города!", "error");
+            return false;
+        }
+        if (usedCities.includes(cityLower)) {
+            showMessage("Этот город уже был!", "error");
+            return false;
+        }
+        if (usedCities.length > 0) {
+            let lastCity = usedCities[usedCities.length - 1];
+            let neededLetter = getValidLetter(lastCity);
+            if (cityLower[0] !== neededLetter) {
+                showMessage(`Нужен город на букву "${neededLetter.toUpperCase()}"!`, "error");
+                return false;
+            }
+        }
+        addCity(city);
+        showMessage("Верно! Мой ход...", "success");
+        return true;
+    }
+    function robotMove() {
+        let lastCity = usedCities[usedCities.length - 1];
+        let neededLetter = getValidLetter(lastCity);
+        let found = allCities.find(city => 
+            city.toLowerCase()[0] === neededLetter && 
+            !usedCities.includes(city.toLowerCase())
+        );
+        if (found) {
+            addCity(found);
+            showMessage(`Я называю: ${found}. Ваш ход!`, "success");
+        } else {
+            showMessage("Я проиграл! Я не знаю больше городов на эту букву.", "success");
+        }
+    }
+    function getValidLetter(city) {
+        let last = city.slice(-1).toLowerCase();
+        if (['ь', 'ъ', 'ы'].includes(last)) {
+            last = city.slice(-2, -1).toLowerCase();
+        }
+        return last;
+    }
+    function addCity(city) {
+        usedCities.push(city.toLowerCase());
+        list.textContent = usedCities.map(c => c.charAt(0).toUpperCase() + c.slice(1)).join(' → ');
+    }
+    function showMessage(text, type) {
+        message.textContent = text;
+        message.className = type;
+    }
+</script>
 </body>
 </html>
