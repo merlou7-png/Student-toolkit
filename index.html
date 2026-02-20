@@ -2,95 +2,117 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Чеклист с редактированием</title>
+    <title>Калькулятор продуктов</title>
     <style>
-        body {
-            text-align: center;
-            font-family: sans-serif;
-        }
-        #input, #list {
-            display: inline-block;
-        }
-        #list {
-            padding: 0;
-            list-style-type: none;
-            text-align: left; 
-        }
-        #list li {
-            margin-bottom: 10px;
-        }
-        #list span {
-            margin-right: 10px;
-        }
-        #list .task {
-            cursor: pointer;
-        }
-        #list .remove, #list .mark {
-            color: blue;
-            cursor: pointer;
-            font-size: 0.8em;
-        }
-        #list .remove:hover, 
-        #list .mark:hover { 
-            text-decoration: underline;
-        }
-        #list .done .task {
-            text-decoration: line-through;
-            color: gray;
-        }
+        body { font-family: sans-serif; margin: 20px; color: #333; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        th, td { border: 1px solid #ccc; padding: 10px; text-align: left; }
+        th { background-color: #f4f4f4; }
+        .total { font-weight: bold; font-size: 1.2em; color: #2c3e50; }
+        .remove { color: red; cursor: pointer; text-decoration: underline; }
+        form { background: #f9f9f9; padding: 15px; border-radius: 5px; display: flex; gap: 10px; flex-wrap: wrap; }
+        input { padding: 5px; border: 1px solid #ddd; border-radius: 3px; }
+        button { cursor: pointer; background: #27ae60; color: white; border: none; padding: 8px 15px; border-radius: 3px; }
+        button:hover { background: #219150; }
+        .edit-input { width: 90%; }
     </style>
 </head>
 <body>
-<div id="wrapper">
-    <h1>Мои задачи</h1>
-    <input id="input" placeholder="Что нужно сделать?"><br><br>
-    <ul id="list"></ul>
-</div>
-<script>
-    let input = document.querySelector('#input');
-    let list = document.querySelector('#list');
-    input.addEventListener('keypress', function(event) { 
-        if (event.key == 'Enter' && this.value.trim() !== '') {
-            let li = document.createElement('li');
-            let task = document.createElement('span');
-            task.classList.add('task');
-            task.textContent = this.value; 
-            task.addEventListener('dblclick', function() { 
-                let text = this.textContent;
-                this.textContent = '';
-                let edit = document.createElement('input');
-                edit.value = text;
-                this.appendChild(edit);
-                edit.focus(); 
-                let self = this;
-                edit.addEventListener('keypress', function(event) { 
-                    if (event.key == 'Enter') { 
-                        self.textContent = this.value; 
+    <h2>Список покупок</h2>
+    <table id="table">
+        <thead>
+            <tr>
+                <th>Название</th>
+                <th>Цена</th>
+                <th>Кол-во</th>
+                <th>Итог</th>
+                <th>Удалить</th>
+            </tr>
+        </thead>
+        <tbody id="inventory">
+            </tbody>
+    </table>
+    <div class="total">
+        Общая сумма: <span id="total-price">0</span> руб.
+    </div>
+    <h3>Добавить продукт</h3>
+    <form id="form">
+        <input type="text" id="name" placeholder="Название" required>
+        <input type="number" id="price" placeholder="Цена" required min="0">
+        <input type="number" id="amount" placeholder="Количество" required min="1">
+        <button type="submit">Добавить</button>
+    </form>
+    <script>
+        const table = document.querySelector('#inventory');
+        const form = document.querySelector('#form');
+        const totalPriceDisplay = document.querySelector('#total-price');
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.querySelector('#name').value;
+            const price = document.querySelector('#price').value;
+            const amount = document.querySelector('#amount').value;
+            createRow(name, price, amount);
+            calculateTotal();
+            this.reset();
+        });
+        function createRow(name, price, amount) {
+            const tr = document.createElement('tr');
+            renderCell(tr, name, 'name');
+            renderCell(tr, price, 'price');
+            renderCell(tr, amount, 'amount');
+            const sumCell = document.createElement('td');
+            sumCell.classList.add('sum');
+            sumCell.textContent = price * amount;
+            tr.appendChild(sumCell);
+            const removeCell = document.createElement('td');
+            const removeLink = document.createElement('span');
+            removeLink.textContent = 'удалить';
+            removeLink.classList.add('remove');
+            removeLink.addEventListener('click', function() {
+                tr.remove();
+                calculateTotal();
+            });
+            removeCell.appendChild(removeLink);
+            tr.appendChild(removeCell);
+            table.appendChild(tr);
+        }
+        function renderCell(tr, value, type) {
+            const td = document.createElement('td');
+            td.textContent = value;
+            td.classList.add(type);
+            td.addEventListener('dblclick', function() {
+                const input = document.createElement('input');
+                input.value = td.textContent;
+                input.classList.add('edit-input');
+                td.textContent = '';
+                td.appendChild(input);
+                input.focus();
+                input.addEventListener('blur', function() {
+                    td.textContent = input.value;
+                    updateRowSum(tr);
+                    calculateTotal();
+                });
+                input.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        this.blur();
                     }
                 });
-                edit.addEventListener('blur', function() {
-                    self.textContent = this.value;
-                });
             });
-            li.appendChild(task);
-            let remove = document.createElement('span');
-            remove.textContent = 'удалить'; 
-            remove.classList.add('remove');
-            remove.addEventListener('click', function() { 
-                this.parentElement.remove();
-            });
-            li.appendChild(remove);
-            let mark = document.createElement('span');
-            mark.textContent = 'сделано'; 
-            mark.classList.add('mark');
-            mark.addEventListener('click', function() { 
-                this.parentElement.classList.toggle('done'); 
-            });
-            li.appendChild(mark);
-            list.appendChild(li);
-            this.value = '';
+            tr.appendChild(td);
         }
-    });
-</script>0
+        function updateRowSum(tr) {
+            const price = parseFloat(tr.querySelector('.price').textContent) || 0;
+            const amount = parseFloat(tr.querySelector('.amount').textContent) || 0;
+            tr.querySelector('.sum').textContent = (price * amount).toFixed(2);
+        }
+        function calculateTotal() {
+            const sums = document.querySelectorAll('.sum');
+            let total = 0;
+            sums.forEach(cell => {
+                total += parseFloat(cell.textContent) || 0;
+            });
+            totalPriceDisplay.textContent = total.toFixed(2);
+        }
+    </script>
 </body>
 </html>
