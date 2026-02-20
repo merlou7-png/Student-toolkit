@@ -8,7 +8,7 @@
         .container { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
         th, td { border: 1px solid #dfe6e9; padding: 12px; text-align: left; }
-        th { background-color: #ffffff; color: rgb(0, 0, 0); }
+        th { background-color: #ffffff; color: rgb(0, 0, 0); border-bottom: 2px solid #00b894; }
         tr:nth-child(even) { background-color: #f9f9f9; }
         .remove { color: #d63031; cursor: pointer; font-weight: bold; }
         .remove:hover { text-decoration: underline; }
@@ -46,12 +46,20 @@
     </div>
 </div>
 <script>
-    const table = document.querySelector('#tbody');
+    const tableBody = document.querySelector('#tbody');
     const totalDisplay = document.querySelector('#total');
     const nameInput = document.querySelector('#name');
     const priceInput = document.querySelector('#price');
     const amountInput = document.querySelector('#amount');
     const addButton = document.querySelector('#add');
+    function recountTotal() {
+        let costs = tableBody.querySelectorAll('.cost');
+        let sum = 0;
+        costs.forEach(cell => {
+            sum += parseFloat(cell.textContent) || 0;
+        });
+        totalDisplay.textContent = sum.toFixed(2);
+    }
     function createCell(tr, value, className) {
         let td = document.createElement('td');
         td.textContent = value;
@@ -74,7 +82,7 @@
         input.addEventListener('blur', function() {
             td.textContent = input.value;
             updateRowCost(tr); 
-            calculateTotal(); 
+            recountTotal(); 
         });
         input.addEventListener('keydown', function(e) {
             if (e.key === 'Enter') this.blur();
@@ -85,12 +93,6 @@
         let amount = parseFloat(tr.querySelector('.amount').textContent) || 0;
         let costCell = tr.querySelector('.cost');
         costCell.textContent = (price * amount).toFixed(2);
-    }
-    function calculateTotal() {
-        let costs = document.querySelectorAll('.cost');
-        let sum = 0;
-        costs.forEach(cell => sum += parseFloat(cell.textContent) || 0);
-        totalDisplay.textContent = sum.toFixed(2);
     }
     addButton.addEventListener('click', function() {
         if (!nameInput.value || !priceInput.value || !amountInput.value) {
@@ -105,10 +107,10 @@
         let removeCell = createCell(tr, 'удалить', 'remove');
         removeCell.addEventListener('click', function() {
             tr.remove();
-            calculateTotal();
+            recountTotal();
         });
-        table.appendChild(tr);
-        calculateTotal();
+        tableBody.appendChild(tr);
+        recountTotal();
         nameInput.value = '';
         priceInput.value = '';
         amountInput.value = '';
