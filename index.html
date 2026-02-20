@@ -1,105 +1,108 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <title>Экранная клавиатура</title>
-    <style>
-        body {
-            font-family: sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding-top: 50px;
-            background-color: #f4f4f9;
-        }
-        #display {
-            width: 580px;
-            padding: 15px;
-            font-size: 20px;
-            margin-bottom: 20px;
-            border: 2px solid #ccc;
-            border-radius: 5px;
-            outline: none;
-        }
-        .keyboard {
-            display: grid;
-            grid-template-columns: repeat(10, 55px);
-            gap: 8px;
-            background: #333;
-            padding: 15px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-        }
-        button {
-            height: 50px;
-            cursor: pointer;
-            background: #fff;
-            border: none;
-            border-radius: 4px;
-            font-size: 18px;
-            font-weight: bold;
-            transition: background 0.2s;
-        }
-        button:active {
-            background: #ddd;
-            transform: translateY(2px);
-        }
-        .wide {
-            grid-column: span 2;
-            background: #e0e0e0;
-        }
-        .caps-active {
-            background: #ff9800 !important;
-            color: white;
-        }
-        .backspace {
-            background: #ff5252;
-            color: white;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>Игра в города</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 700px;
+      margin: 30px auto;
+      padding: 0 20px;
+    }
+    #turn {
+      font-size: 1.3em;
+      font-weight: bold;
+      margin: 20px 0;
+      color: #2c3e50;
+    }
+    #field {
+      width: 100%;
+      padding: 12px;
+      font-size: 1.2em;
+      box-sizing: border-box;
+      margin-bottom: 10px;
+    }
+    #message {
+      min-height: 80px;
+      padding: 15px;
+      border-radius: 6px;
+      background: #f8f9fa;
+      line-height: 1.5;
+    }
+    .success { background: #e8f5e9; color: #2e7d32; }
+    .error   { background: #ffebee; color: #c62828; }
+    .info    { background: #e3f2fd; color: #1565c0; }
+  </style>
 </head>
 <body>
-    <input type="text" id="display" placeholder="Нажимайте на клавиши...">
-    <div id="keyboard" class="keyboard"></div>
-    <script>
-        const keyboardContainer = document.querySelector('#keyboard');
-        const inputField = document.querySelector('#display');
-        const keys = [
-            '1', '2', '3', '4', '5', '6', '7', '8', '9', '0',
-            'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p',
-            'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';',
-            'caps', 'z', 'x', 'c', 'v', 'b', 'n', 'm', 'backspace'
-        ];
-        let isCaps = false;
-        function renderKeyboard() {
-            keyboardContainer.innerHTML = '';
-            keys.forEach(key => {
-                const btn = document.createElement('button');
-                if (key === 'caps') {
-                    btn.textContent = 'Caps';
-                    btn.classList.add('wide');
-                    if (isCaps) btn.classList.add('caps-active');
-                } else if (key === 'backspace') {
-                    btn.textContent = '←';
-                    btn.classList.add('wide', 'backspace');
-                } else {
-                    btn.textContent = isCaps ? key.toUpperCase() : key.toLowerCase();
-                }
-                btn.onclick = () => {
-                    if (key === 'caps') {
-                        isCaps = !isCaps;
-                        renderKeyboard(); 
-                    } else if (key === 'backspace') {
-                        inputField.value = inputField.value.slice(0, -1);
-                    } else {
-                        inputField.value += btn.textContent;
-                    }
-                    inputField.focus(); 
-                };
-                keyboardContainer.appendChild(btn);
-            });
+  <h1>Игра в города</h1>
+  <div id="turn">Ход игрока 1 — назовите любой город</div>
+  <input id="field" placeholder="Введите город и нажмите Enter" autocomplete="off">
+  <div id="message" class="info">Игрок 1 начинает. Назови любой реальный город.</div>
+  <script>
+    const field   = document.querySelector('#field');
+    const message = document.querySelector('#message');
+    const turn    = document.querySelector('#turn');
+    let used = new Set();               
+    let currentPlayer = 1;
+    let lastLetter = null;              
+    function getEndLetter(city) {
+      let str = city.toLowerCase().trim();
+      let last = str[str.length - 1];
+      if ('ьъы'.includes(last) && str.length > 1) {
+        return str[str.length - 2];
+      }
+      return last;
+    }
+    function showMessage(text, type = 'info') {
+      message.textContent = text;
+      message.className = type; 
+    }
+    function updateTurnDisplay() {
+      let letterText = lastLetter ? ` (на «${lastLetter}»)` : '';
+      turn.textContent = `Ход игрока ${currentPlayer}${letterText}`;
+    }
+    field.addEventListener('keydown', function(e) {
+      if (e.key !== 'Enter') return;
+      e.preventDefault();
+      let city = field.value.trim();
+      if (!city) {
+        showMessage('Введите город!', 'error');
+        return;
+      }
+      let cityLower = city.toLowerCase();
+      if (['стоп', 'сдаюсь', 'хватит', 'конец'].includes(cityLower)) {
+        showMessage(`Игрок ${currentPlayer} сдался. Побеждает игрок ${currentPlayer === 1 ? 2 : 1}!`, 'success');
+        field.disabled = true;
+        turn.textContent = 'Игра окончена';
+        return;
+      }
+      if (city.length < 2) {
+        showMessage('Название города должно содержать хотя бы 2 буквы', 'error');
+        return;
+      }
+      if (used.has(cityLower)) {
+        showMessage('Этот город уже называли!', 'error');
+        return;
+      }
+      if (lastLetter !== null) {
+        let firstLetter = cityLower[0];
+        if (firstLetter !== lastLetter) {
+          showMessage(`Нужно назвать город на букву «${lastLetter}»`, 'error');
+          return;
         }
-        renderKeyboard();
-    </script>
+      }
+      used.add(cityLower);
+      lastLetter = getEndLetter(city);
+      showMessage(`Игрок ${currentPlayer}: ${city}`, 'success');
+      currentPlayer = currentPlayer === 1 ? 2 : 1;
+      field.value = '';
+      field.focus();
+      updateTurnDisplay();
+    });
+    field.focus();
+  </script>
+
 </body>
 </html>
