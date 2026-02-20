@@ -2,12 +2,12 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Чеклист с зачеркиванием</title>
+    <title>Чеклист с кнопками</title>
     <style>
         body {
             text-align: center;
-            padding-top: 50px;
             font-family: Arial, sans-serif;
+            padding-top: 30px;
         }
         #input, #list {
             display: inline-block;
@@ -18,44 +18,60 @@
             display: block;
             margin-top: 20px;
         }
-        li {
-            background: #f9f9f9;
-            margin: 5px auto;
-            padding: 10px 15px;
-            border: 1px solid #ddd;
-            width: 250px;
-            border-radius: 4px;
-            text-align: left;
-            cursor: pointer;
-            transition: 0.2s;
+        #list span {
+            margin-right: 10px;
         }
-        li:hover {
-            background: #f0f0f0;
+        #list .remove, #list .mark {
+            color: blue;
+            cursor: pointer;
+            font-size: 0.8em;
+        }
+        #list .remove:hover, #list .mark:hover {
+            text-decoration: underline;
         }
         .done {
             text-decoration: line-through;
-            color: #888;
-            background: #eee;
+            color: gray;
+        }
+        li {
+            margin-bottom: 10px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+            width: fit-content;
+            margin-left: auto;
+            margin-right: auto;
         }
     </style>
 </head>
 <body>
-    <input id="input" placeholder="Введите задачу и нажмите Enter">
+    <input id="input" placeholder="Введите задачу...">
     <ul id="list"></ul>
     <script>
         let input = document.querySelector('#input');
         let list = document.querySelector('#list');
         input.addEventListener('keypress', function(event) {
-            if (event.key == 'Enter') {
-                if (input.value.trim() !== '') {
-                    let li = document.createElement('li');
-                    li.textContent = input.value;
-                    li.addEventListener('click', function() {
-                        this.classList.toggle('done');
-                    });
-                    list.appendChild(li);
-                    input.value = '';
-                }
+            if (event.key == 'Enter' && this.value.trim() !== '') {
+                let li = document.createElement('li');
+                let task = document.createElement('span');
+                task.classList.add('task');
+                task.textContent = this.value;
+                li.appendChild(task);
+                let remove = document.createElement('span');
+                remove.classList.add('remove');
+                remove.textContent = 'удалить';
+                remove.addEventListener('click', function() {
+                    li.remove(); 
+                });
+                li.appendChild(remove);
+                let mark = document.createElement('span');
+                mark.classList.add('mark');
+                mark.textContent = 'сделано';
+                mark.addEventListener('click', function() {
+                    task.classList.toggle('done');
+                });
+                li.appendChild(mark);
+                list.appendChild(li);
+                this.value = '';
             }
         });
     </script>
