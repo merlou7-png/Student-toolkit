@@ -2,117 +2,117 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Калькулятор продуктов</title>
+    <title>Профессиональный калькулятор продуктов</title>
     <style>
-        body { font-family: sans-serif; margin: 20px; color: #333; }
-        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-        th, td { border: 1px solid #ccc; padding: 10px; text-align: left; }
-        th { background-color: #f4f4f4; }
-        .total { font-weight: bold; font-size: 1.2em; color: #2c3e50; }
-        .remove { color: red; cursor: pointer; text-decoration: underline; }
-        form { background: #f9f9f9; padding: 15px; border-radius: 5px; display: flex; gap: 10px; flex-wrap: wrap; }
-        input { padding: 5px; border: 1px solid #ddd; border-radius: 3px; }
-        button { cursor: pointer; background: #27ae60; color: white; border: none; padding: 8px 15px; border-radius: 3px; }
-        button:hover { background: #219150; }
-        .edit-input { width: 90%; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 30px; background-color: #f4f7f6; }
+        .container { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #dfe6e9; padding: 12px; text-align: left; }
+        th { background-color: #ffffff; color: rgb(0, 0, 0); }
+        tr:nth-child(even) { background-color: #f9f9f9; }
+        .remove { color: #d63031; cursor: pointer; font-weight: bold; }
+        .remove:hover { text-decoration: underline; }
+        .total-section { margin-top: 20px; font-size: 1.2em; font-weight: bold; text-align: right; color: #2d3436; }
+        .form-section { display: flex; gap: 10px; margin-top: 30px; background: #dfe6e9; padding: 15px; border-radius: 5px; }
+        input { padding: 8px; border: 1px solid #b2bec3; border-radius: 4px; flex: 1; }
+        button { padding: 8px 20px; background-color: #00b894; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background-color: #00947a; }
+        .edit-input { width: 100%; box-sizing: border-box; }
     </style>
 </head>
 <body>
-    <h2>Список покупок</h2>
+<div class="container">
+    <h2>Калькулятор покупок</h2>
     <table id="table">
         <thead>
             <tr>
                 <th>Название</th>
-                <th>Цена</th>
+                <th>Цена (руб)</th>
                 <th>Кол-во</th>
-                <th>Итог</th>
-                <th>Удалить</th>
+                <th>Стоимость</th>
+                <th>Действие</th>
             </tr>
         </thead>
-        <tbody id="inventory">
-            </tbody>
+        <tbody id="tbody"></tbody>
     </table>
-    <div class="total">
-        Общая сумма: <span id="total-price">0</span> руб.
+    <div class="total-section">
+        Итого: <span id="total">0</span> руб.
     </div>
-    <h3>Добавить продукт</h3>
-    <form id="form">
-        <input type="text" id="name" placeholder="Название" required>
-        <input type="number" id="price" placeholder="Цена" required min="0">
-        <input type="number" id="amount" placeholder="Количество" required min="1">
-        <button type="submit">Добавить</button>
-    </form>
-    <script>
-        const table = document.querySelector('#inventory');
-        const form = document.querySelector('#form');
-        const totalPriceDisplay = document.querySelector('#total-price');
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const name = document.querySelector('#name').value;
-            const price = document.querySelector('#price').value;
-            const amount = document.querySelector('#amount').value;
-            createRow(name, price, amount);
-            calculateTotal();
-            this.reset();
-        });
-        function createRow(name, price, amount) {
-            const tr = document.createElement('tr');
-            renderCell(tr, name, 'name');
-            renderCell(tr, price, 'price');
-            renderCell(tr, amount, 'amount');
-            const sumCell = document.createElement('td');
-            sumCell.classList.add('sum');
-            sumCell.textContent = price * amount;
-            tr.appendChild(sumCell);
-            const removeCell = document.createElement('td');
-            const removeLink = document.createElement('span');
-            removeLink.textContent = 'удалить';
-            removeLink.classList.add('remove');
-            removeLink.addEventListener('click', function() {
-                tr.remove();
-                calculateTotal();
-            });
-            removeCell.appendChild(removeLink);
-            tr.appendChild(removeCell);
-            table.appendChild(tr);
-        }
-        function renderCell(tr, value, type) {
-            const td = document.createElement('td');
-            td.textContent = value;
-            td.classList.add(type);
+    <div class="form-section">
+        <input type="text" id="name" placeholder="Продукт">
+        <input type="number" id="price" placeholder="Цена">
+        <input type="number" id="amount" placeholder="Кол-во">
+        <button id="add">Добавить</button>
+    </div>
+</div>
+<script>
+    const table = document.querySelector('#tbody');
+    const totalDisplay = document.querySelector('#total');
+    const nameInput = document.querySelector('#name');
+    const priceInput = document.querySelector('#price');
+    const amountInput = document.querySelector('#amount');
+    const addButton = document.querySelector('#add');
+    function createCell(tr, value, className) {
+        let td = document.createElement('td');
+        td.textContent = value;
+        td.classList.add(className);
+        tr.appendChild(td);
+        if (className !== 'cost' && className !== 'remove') {
             td.addEventListener('dblclick', function() {
-                const input = document.createElement('input');
-                input.value = td.textContent;
-                input.classList.add('edit-input');
-                td.textContent = '';
-                td.appendChild(input);
-                input.focus();
-                input.addEventListener('blur', function() {
-                    td.textContent = input.value;
-                    updateRowSum(tr);
-                    calculateTotal();
-                });
-                input.addEventListener('keypress', function(e) {
-                    if (e.key === 'Enter') {
-                        this.blur();
-                    }
-                });
+                makeEditable(td, tr);
             });
-            tr.appendChild(td);
         }
-        function updateRowSum(tr) {
-            const price = parseFloat(tr.querySelector('.price').textContent) || 0;
-            const amount = parseFloat(tr.querySelector('.amount').textContent) || 0;
-            tr.querySelector('.sum').textContent = (price * amount).toFixed(2);
+        return td;
+    }
+    function makeEditable(td, tr) {
+        let input = document.createElement('input');
+        input.value = td.textContent;
+        input.classList.add('edit-input');
+        td.textContent = '';
+        td.appendChild(input);
+        input.focus();
+        input.addEventListener('blur', function() {
+            td.textContent = input.value;
+            updateRowCost(tr); 
+            calculateTotal(); 
+        });
+        input.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') this.blur();
+        });
+    }
+    function updateRowCost(tr) {
+        let price = parseFloat(tr.querySelector('.price').textContent) || 0;
+        let amount = parseFloat(tr.querySelector('.amount').textContent) || 0;
+        let costCell = tr.querySelector('.cost');
+        costCell.textContent = (price * amount).toFixed(2);
+    }
+    function calculateTotal() {
+        let costs = document.querySelectorAll('.cost');
+        let sum = 0;
+        costs.forEach(cell => sum += parseFloat(cell.textContent) || 0);
+        totalDisplay.textContent = sum.toFixed(2);
+    }
+    addButton.addEventListener('click', function() {
+        if (!nameInput.value || !priceInput.value || !amountInput.value) {
+            alert('Заполните все поля!');
+            return;
         }
-        function calculateTotal() {
-            const sums = document.querySelectorAll('.sum');
-            let total = 0;
-            sums.forEach(cell => {
-                total += parseFloat(cell.textContent) || 0;
-            });
-            totalPriceDisplay.textContent = total.toFixed(2);
-        }
-    </script>
+        let tr = document.createElement('tr');
+        createCell(tr, nameInput.value, 'name');
+        createCell(tr, priceInput.value, 'price');
+        createCell(tr, amountInput.value, 'amount');
+        createCell(tr, (priceInput.value * amountInput.value).toFixed(2), 'cost');
+        let removeCell = createCell(tr, 'удалить', 'remove');
+        removeCell.addEventListener('click', function() {
+            tr.remove();
+            calculateTotal();
+        });
+        table.appendChild(tr);
+        calculateTotal();
+        nameInput.value = '';
+        priceInput.value = '';
+        amountInput.value = '';
+    });
+</script>
 </body>
 </html>
