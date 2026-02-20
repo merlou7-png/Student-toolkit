@@ -2,108 +2,62 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Игра в Города на JS</title>
+    <title>Чеклист с зачеркиванием</title>
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f0f2f5;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-        .game-container {
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            width: 100%;
-            max-width: 400px;
             text-align: center;
+            padding-top: 50px;
+            font-family: Arial, sans-serif;
         }
-        h1 { color: #1a73e8; font-size: 24px; margin-bottom: 20px; }
-        input {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #ddd;
-            border-radius: 6px;
-            font-size: 16px;
-            box-sizing: border-box;
-            transition: border-color 0.3s;
+        #input, #list {
+            display: inline-block;
         }
-        input:focus { border-color: #1a73e8; outline: none; }
-        #message {
-            margin: 15px 0;
-            min-height: 20px;
-            font-weight: 500;
-        }
-        .error { color: #d93025; }
-        .success { color: #188038; }
-        #city-list {
+        #list {
+            padding: 0;
+            list-style-type: none;
+            display: block;
             margin-top: 20px;
+        }
+        li {
+            background: #f9f9f9;
+            margin: 5px auto;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            width: 250px;
+            border-radius: 4px;
             text-align: left;
-            font-size: 14px;
-            color: #5f6368;
-            border-top: 1px solid #eee;
-            padding-top: 15px;
-            max-height: 100px;
-            overflow-y: auto;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        li:hover {
+            background: #f0f0f0;
+        }
+        .done {
+            text-decoration: line-through;
+            color: #888;
+            background: #eee;
         }
     </style>
 </head>
 <body>
-<div class="game-container">
-    <h1>Города</h1>
-    <p>Введите город и нажмите <strong>Enter</strong></p>
-    <input type="text" id="cityInput" placeholder="Например: Москва" autocomplete="off">
-    <div id="message"></div>
-    <div id="city-list">
-        <strong>Использованные города:</strong>
-        <div id="citiesArray">Пока пусто</div>
-    </div>
-</div>
-<script>
-    let cities = [];
-    const input = document.getElementById('cityInput');
-    const message = document.getElementById('message');
-    const displayList = document.getElementById('citiesArray');
-    input.addEventListener('keypress', function (e) {
-        if (e.key === 'Enter') {
-            const currentCity = input.value.trim();
-            if (currentCity === "") return;
-            if (cities.length === 0) {
-                addCity(currentCity);
-            } else {
-                const lastCity = cities[cities.length - 1];
-                let lastLetter = lastCity.slice(-1).toLowerCase();
-                if (['ь', 'ы', 'ъ'].includes(lastLetter)) {
-                    lastLetter = lastCity.slice(-2, -1).toLowerCase();
-                }
-                const firstLetter = currentCity[0].toLowerCase();
-                if (cities.map(c => c.toLowerCase()).includes(currentCity.toLowerCase())) {
-                    showMessage("Этот город уже был!", "error");
-                } 
-                else if (firstLetter !== lastLetter) {
-                    showMessage(`Ошибка! Нужно на букву "${lastLetter.toUpperCase()}"`, "error");
-                } 
-                else {
-                    addCity(currentCity);
+    <input id="input" placeholder="Введите задачу и нажмите Enter">
+    <ul id="list"></ul>
+    <script>
+        let input = document.querySelector('#input');
+        let list = document.querySelector('#list');
+        input.addEventListener('keypress', function(event) {
+            if (event.key == 'Enter') {
+                if (input.value.trim() !== '') {
+                    let li = document.createElement('li');
+                    li.textContent = input.value;
+                    li.addEventListener('click', function() {
+                        this.classList.toggle('done');
+                    });
+                    list.appendChild(li);
+                    input.value = '';
                 }
             }
-            input.value = ""; 
-        }
-    });
-    function addCity(city) {
-        cities.push(city);
-        displayList.textContent = cities.join(' → ');
-        showMessage("Принято!", "success");
-    }
-    function showMessage(text, type) {
-        message.textContent = text;
-        message.className = type;
-    }
-</script>
+        });
+    </script>
 </body>
 </html>
