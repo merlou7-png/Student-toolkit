@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Крестики-Нолики</title>
+    <style>
+        #field td {
+            width: 50px;
+            height: 50px;
+            border: 1px solid black;
+            text-align: center;
+            font-weight: bold;
+            font-size: 24px;
+            font-family: Arial, sans-serif;
+            cursor: pointer;
+        }
+        #field {
+            border-collapse: collapse;
+            margin-bottom: 10px;
+        }
+        .message {
+            font-family: Arial, sans-serif;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body style="display: flex;justify-content: center;align-items: center;height: 100vh;">
+    <table id="field">
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+    </table>
+    <div id="text" class="message">Ходит: X</div>
+    <script>
+        let cells = document.querySelectorAll('#field td');
+        let message = document.querySelector('#text');
+        let i = 0;
+        function start(cells) {
+            for (let cell of cells) {
+                cell.addEventListener('click', function step() {
+                    this.textContent = ['X', 'O'][i % 2];
+                    this.removeEventListener('click', step);
+                    if (isVictory(cells)) {
+                        message.textContent = 'Победил: ' + this.textContent + '!';
+                        stopGame(cells);
+                    } else if (i === 8) {
+                        message.textContent = 'Ничья!';
+                    } else {
+                        i++;
+                        message.textContent = 'Ходит: ' + ['X', 'O'][i % 2];
+                    }
+                });
+            }
+        }
+        function isVictory(cells) {
+            let combinations = [
+                [0, 1, 2], [3, 4, 5], [6, 7, 8],
+                [0, 3, 6], [1, 4, 7], [2, 5, 8], 
+                [0, 4, 8], [2, 4, 6]
+            ];
+            for (let comb of combinations) {
+                if (
+                    cells[comb[0]].textContent != '' &&
+                    cells[comb[0]].textContent == cells[comb[1]].textContent &&
+                    cells[comb[1]].textContent == cells[comb[2]].textContent
+                ) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        function stopGame(cells) {
+            for (let cell of cells) {
+                let newCell = cell.cloneNode(true);
+                cell.parentNode.replaceChild(newCell, cell);
+            }
+        }
+        start(cells);
+    </script>
+</body>
+</html>
