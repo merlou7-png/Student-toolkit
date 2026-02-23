@@ -2,80 +2,99 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Крестики-Нолики: Финал</title>
+    <title>Календарь на JS</title>
     <style>
-        #field td {
-            width: 50px;
-            height: 50px;
+        #parent {
+            text-align: center;
+        }
+        #calendar {
+            display: inline-block;
+        }
+        #calendar td, #calendar th {
+            padding: 5px 12px;
             border: 1px solid black;
             text-align: center;
-            font-weight: bold;
-            font-size: 24px;
-            font-family: sans-serif;
-            cursor: pointer;
         }
-        #field {
-            border-collapse: collapse;
-            margin-bottom: 10px;
-        }
-        .win-message {
-            color: green;
+        .today {
+            background-color: #f0f0f0;
+            color: red;
             font-weight: bold;
         }
     </style>
 </head>
 <body>
-    <table id="field">
-        <tr><td></td><td></td><td></td></tr>
-        <tr><td></td><td></td><td></td></tr>
-        <tr><td></td><td></td><td></td></tr>
-    </table>
-    <div id="info"></div>
-    <script>
-        let cells = document.querySelectorAll('#field td');
-        let info = document.querySelector('#info');
-        function start(cells) {
-            let i = 0; 
-            for (let cell of cells) {
-                cell.addEventListener('click', function step() {
-                    this.textContent = ['X', 'O'][i % 2];
-                    this.removeEventListener('click', step);
-                    if (isVictory(cells)) {
-                        info.textContent = 'Победитель: ' + this.textContent;
-                        info.className = 'win-message';
-                        stopGame(cells);
-                    } 
-                    else if (i === 8) { 
-                        info.textContent = 'Ничья!';
-                    }
-                    i++;
-                });
-            }
+<div id="parent">
+    <div id="calendar">
+        <table>
+            <thead>
+                <tr>
+                    <th>пн</th>
+                    <th>вт</th>
+                    <th>ср</th>
+                    <th>чт</th>
+                    <th>пт</th>
+                    <th>сб</th>
+                    <th>вс</th>
+                </tr>
+            </thead>
+            <tbody class="body"></tbody>
+        </table>
+    </div>
+</div>
+<script>
+    let calendar = document.querySelector('#calendar');
+    let body = calendar.querySelector('.body');
+    let date  = new Date();
+    let year  = date.getFullYear();
+    let month = date.getMonth();
+    function draw(body, year, month) {
+        let arr = range(getLastDay(year, month));
+        let firstWeekDay = getFirstWeekDay(year, month);
+        let lastWeekDay  = getLastWeekDay(year, month);
+        let res = chunk(normalize(arr, firstWeekDay, lastWeekDay), 7);
+        createTable(body, res);
+    }
+    function range(count) {
+        let arr = [];
+        for (let i = 1; i <= count; i++) arr.push(i);
+        return arr;
+    }
+    function getLastDay(year, month) {
+        return new Date(year, month + 1, 0).getDate();
+    }
+    function getFirstWeekDay(year, month) {
+        let day = new Date(year, month, 1).getDay();
+        return day === 0 ? 6 : day - 1;
+    }
+    function getLastWeekDay(year, month) {
+        let day = new Date(year, month + 1, 0).getDay();
+        return day === 0 ? 6 : day - 1;
+    }
+    function normalize(arr, left, right) {
+        for (let i = 0; i < left; i++) arr.unshift('');
+        for (let i = 0; i < 6 - right; i++) arr.push('');
+        return arr;
+    }
+    function chunk(arr, n) {
+        let res = [];
+        for (let i = 0; i < arr.length; i += n) {
+            res.push(arr.slice(i, i + n));
         }
-        function isVictory(cells) {
-            let combs = [
-                [0, 1, 2], [3, 4, 5], [6, 7, 8],
-                [0, 3, 6], [1, 4, 7], [2, 5, 8], 
-                [0, 4, 8], [2, 4, 6]
-            ];
-            for (let comb of combs) {
-                if (
-                    cells[comb[0]].textContent != '' &&
-                    cells[comb[0]].textContent == cells[comb[1]].textContent &&
-                    cells[comb[1]].textContent == cells[comb[2]].textContent
-                ) {
-                    return true;
-                }
+        return res;
+    }
+    function createTable(parent, arr) {
+        parent.innerHTML = '';
+        for (let sub of arr) {
+            let tr = document.createElement('tr');
+            for (let num of sub) {
+                let td = document.createElement('td');
+                td.textContent = num;
+                tr.appendChild(td);
             }
-            return false;
+            parent.appendChild(tr);
         }
-        function stopGame(cells) {
-            for (let cell of cells) {
-                let newCell = cell.cloneNode(true);
-                cell.parentNode.replaceChild(newCell, cell);
-            }
-        }
-        start(cells);
-    </script>
+    }
+    draw(body, year, month);
+</script>
 </body>
 </html>
