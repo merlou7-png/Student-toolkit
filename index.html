@@ -2,30 +2,33 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Итоговый календарь JS</title>
+    <title>Вывод месяца и года в календаре</title>
     <style>
         #parent {
             text-align: center;
-            padding-top: 50px;
+            padding-top: 20px;
         }
         #calendar {
             display: inline-block;
         }
         #calendar td, #calendar th {
-            padding: 5px 12px;
+            padding: 10px;
             border: 1px solid black;
             text-align: center;
             width: 30px;
-            height: 30px;
         }
-        #calendar th {
-            background-color: #f0f0f0;
+        #calendar .info {
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 1.2em;
         }
     </style>
 </head>
 <body>
 <div id="parent">
     <div id="calendar">
+        <div class="info"></div>
         <table>
             <thead>
                 <tr>
@@ -45,11 +48,17 @@
 <script>
     let calendar = document.querySelector('#calendar');
     let body = calendar.querySelector('.body');
+    let info = calendar.querySelector('.info');
     let date = new Date();
     let year = date.getFullYear();
     let month = date.getMonth();
-    draw(body, year, month);
-    function draw(body, year, month) {
+    draw(body, info, year, month);
+    function draw(body, info, year, month) {
+        let monthNames = [
+            'Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
+            'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'
+        ];
+        info.textContent = monthNames[month] + ' ' + year;
         let arr = range(getLastDay(year, month));
         let firstWeekDay = getFirstWeekDay(year, month);
         let lastWeekDay = getLastWeekDay(year, month);
@@ -58,64 +67,44 @@
     }
     function createTable(parent, arr) {
         parent.textContent = '';
-        let cells = [];
         for (let sub of arr) {
             let tr = document.createElement('tr');
             for (let num of sub) {
                 let td = document.createElement('td');
                 td.textContent = num;
                 tr.appendChild(td);
-                cells.push(td);
             }
             parent.appendChild(tr);
         }
-        return cells;
     }
     function normalize(arr, left, right) {
-        for (let i = 0; i < left; i++) {
-            arr.unshift('');
-        }
-        for (let i = 0; i < right; i++) {
-            arr.push('');
-        }
+        for (let i = 0; i < left; i++) arr.unshift('');
+        for (let i = 0; i < right; i++) arr.push('');
         return arr;
     }
     function getFirstWeekDay(year, month) {
         let date = new Date(year, month, 1);
         let num = date.getDay();
-        if (num == 0) {
-            return 6;
-        } else {
-            return num - 1;
-        }
+        return num === 0 ? 6 : num - 1;
     }
     function getLastWeekDay(year, month) {
         let date = new Date(year, month + 1, 0);
         let num = date.getDay();
-
-        if (num == 0) {
-            return 6;
-        } else {
-            return num - 1;
-        }
+        return num === 0 ? 6 : num - 1;
     }
     function getLastDay(year, month) {
-        let date = new Date(year, month + 1, 0);
-        return date.getDate();
+        return new Date(year, month + 1, 0).getDate();
     }
     function range(count) {
         let arr = [];
-        for (let i = 1; i <= count; i++) {
-            arr.push(i);
-        }
+        for (let i = 1; i <= count; i++) arr.push(i);
         return arr;
     }
     function chunk(arr, n) {
         let result = [];
         let count = Math.ceil(arr.length / n);
         for (let i = 0; i < count; i++) {
-            let elems = arr.splice(0, n);
-            result.push(elems);
+            result.push(arr.splice(0, n));
         }
         return result;
     }
