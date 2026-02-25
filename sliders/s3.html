@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Image Slider</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 50px;
+        }
+        .slider-container {
+            text-align: center;
+        }
+        #slider {
+            width: 400px;
+            height: 300px;
+            display: block;
+            margin: 10px 0;
+            object-fit: cover;
+            border: 1px solid #ccc;
+        }
+        .nav-link {
+            text-decoration: none;
+            font-size: 30px;
+            color: black;
+            margin: 0 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="slider-container">
+        <a href="" id="left" class="nav-link">←</a>
+        <a href="" id="right" class="nav-link">→</a>
+        <img id="slider" src="" alt="slider">
+    </div>
+    <script>
+        let photos = ['https://t4.ftcdn.net/jpg/00/12/13/43/360_F_12134333_iUxYE4uEf8ZJUmg6Sr1MjJCk5GsK8Eng.jpg',
+        'https://i.ytimg.com/vi/WPjJiB5X2Hk/maxresdefault.jpg?sqp=-oaymwEmCIAKENAF8quKqQMa8AEB-AH-CYAC0AWKAgwIABABGGUgWyhOMA8=&rs=AOn4CLAc96lkABRTp1E3AGL1jQ_QfYbJjg',
+        'https://i.pinimg.com/736x/bd/7b/86/bd7b864ad4422494b70251afd0e8e4fa.jpg'];
+        let i = 0;
+        const img = document.querySelector('#slider');
+        const left = document.querySelector('#left');
+        const right = document.querySelector('#right');
+        img.src = photos[i];
+        function next() {
+            i++;
+            if (i >= photos.length) {
+                i = 0;
+            }
+            img.src = photos[i];
+        }
+        function prev() {
+            i--;
+            if (i < 0) {
+                i = photos.length - 1;
+            }
+            img.src = photos[i];
+        }
+        let timer = setInterval(next, 1000);
+        right.addEventListener('click', function(e) {
+            e.preventDefault();
+            next();
+            restartTimer();
+        });
+        left.addEventListener('click', function(e) {
+            e.preventDefault();
+            prev();
+            restartTimer();
+        });
+        function restartTimer() {
+            clearInterval(timer);
+            timer = setInterval(next, 1000);
+        }
+    </script>
+</body>
+</html>
