@@ -2,149 +2,35 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Календарь со стрелками</title>
+    <title>Текстовый слайдер</title>
     <style>
-        #parent {
-            text-align: center;
-        }
-        #calendar {
-            display: inline-block;
-        }
-        #calendar td, #calendar th {
-            padding: 10px;
-            border: 1px solid black;
-            text-align: center;
-            width: 30px;
-        }
-        #calendar .nav, #calendar .info {
-            text-align: center;
-            margin: 10px 0;
-            font-weight: bold;
-        }
-        #calendar a {
-            color: blue;
-            font-size: 25px;
-            text-decoration: none;
-            margin: 0 10px;
-        }
-        #calendar a:hover {
-            color: red;
+        #slider {
+            width: 200px;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #333;
+            font-size: 24px;
+            font-family: sans-serif;
+            background-color: #f9f9f9;
         }
     </style>
 </head>
 <body>
-<div id="parent">
-    <div id="calendar">
-        <div class="info"></div>
-        <table>
-            <thead>
-                <tr>
-                    <th>пн</th>
-                    <th>вт</th>
-                    <th>ср</th>
-                    <th>чт</th>
-                    <th>пт</th>
-                    <th>сб</th>
-                    <th>вс</th>
-                </tr>
-            </thead>
-            <tbody class="body"></tbody>
-        </table>
-        <div class="nav">
-            <a href="#" class="prev">←</a>
-            <a href="#" class="next">→</a>
-        </div>
-    </div>
-</div>
-<script>
-    let calendar = document.querySelector('#calendar');
-    let body = calendar.querySelector('.body');
-    let info = calendar.querySelector('.info');
-    let prev = calendar.querySelector('.prev');
-    let next = calendar.querySelector('.next');
-    let date = new Date();
-    let year = date.getFullYear();
-    let month = date.getMonth();
-    draw(body, year, month);
-    next.addEventListener('click', function(event) {
-        event.preventDefault();
-        year = getNextYear(year, month);
-        month = getNextMonth(month);
-        draw(body, year, month);
-    });
-    prev.addEventListener('click', function(event) {
-        event.preventDefault();
-        year = getPrevYear(year, month);
-        month = getPrevMonth(month);
-        draw(body, year, month);
-    });
-    function draw(body, year, month) {
-        let monthNames = [
-            'Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн',
-            'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'
-        ];
-        info.textContent = monthNames[month] + ' ' + year;
-        let arr = range(getLastDay(year, month));
-        let firstWeekDay = getFirstWeekDay(year, month);
-        let lastWeekDay = getLastWeekDay(year, month);
-        let nums = chunk(normalize(arr, firstWeekDay, 6 - lastWeekDay), 7);
-        createTable(body, nums);
-    }
-    function getNextYear(year, month) {
-        return month === 11 ? year + 1 : year;
-    }
-    function getNextMonth(month) {
-        return month === 11 ? 0 : month + 1;
-    }
-    function getPrevYear(year, month) {
-        return month === 0 ? year - 1 : year;
-    }
-    function getPrevMonth(month) {
-        return month === 0 ? 11 : month - 1;
-    }
-    function createTable(parent, arr) {
-        parent.textContent = '';
-        for (let sub of arr) {
-            let tr = document.createElement('tr');
-            for (let num of sub) {
-                let td = document.createElement('td');
-                td.textContent = num;
-                tr.appendChild(td);
+    <div id="slider"></div>
+    <script>
+        let texts = ['text1', 'text2', 'text3'];
+        let slider = document.querySelector('#slider');
+        let i = 0;
+        slider.textContent = texts[i];
+        setInterval(function() {
+            i++;
+            if (i >= texts.length) {
+                i = 0;
             }
-            parent.appendChild(tr);
-        }
-    }
-    function normalize(arr, left, right) {
-        for (let i = 0; i < left; i++) arr.unshift('');
-        for (let i = 0; i < right; i++) arr.push('');
-        return arr;
-    }
-    function getFirstWeekDay(year, month) {
-        let date = new Date(year, month, 1);
-        let num = date.getDay();
-        return num === 0 ? 6 : num - 1;
-    }
-    function getLastWeekDay(year, month) {
-        let date = new Date(year, month + 1, 0);
-        let num = date.getDay();
-        return num === 0 ? 6 : num - 1;
-    }
-    function getLastDay(year, month) {
-        return new Date(year, month + 1, 0).getDate();
-    }
-    function range(count) {
-        let arr = [];
-        for (let i = 1; i <= count; i++) arr.push(i);
-        return arr;
-    }
-    function chunk(arr, n) {
-        let result = [];
-        let count = Math.ceil(arr.length / n);
-        for (let i = 0; i < count; i++) {
-            result.push(arr.splice(0, n));
-        }
-        return result;
-    }
-</script>
+            slider.textContent = texts[i];
+        }, 1000);
+    </script>
 </body>
 </html>
