@@ -17,7 +17,7 @@ var person = {
     age: 17,
     grades: [90, 80, 70, 45]
 };
-var StudentManager = /** @class */ (function () {
+var StudentManager = (function () {
     function StudentManager() {
         this.students = [];
     }
