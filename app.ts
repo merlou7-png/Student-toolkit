@@ -1,85 +1,80 @@
-var UserRole;
-(function (UserRole) {
-    UserRole["Admin"] = "Admin";
-    UserRole["Teacher"] = "Teacher";
-    UserRole["Student"] = "Student";
-})(UserRole || (UserRole = {}));
-function getUserInfo(user) {
-    switch (user.role) {
-        case UserRole.Admin:
-            return "Admin user: ".concat(user.name);
-        case UserRole.Teacher:
-            return "Teacher user: ".concat(user.name);
-        case UserRole.Student:
-            return "Student user: ".concat(user.name);
-        default:
-            return "User: ".concat(user.name);
-    }
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var userTuple = ["Alex", 25, true];
+function greetUser(data) {
+    return "Hello, ".concat(data.name, "! Age: ").concat(data.age);
 }
-function logAction(action, userId) {
-    var target = userId ? "ID ".concat(userId) : "System";
-    console.log("".concat(target, ": ").concat(action));
-}
-function getStatus(status) {
-    if (status === void 0) { status = "Active"; }
-    return "Status: ".concat(status);
-}
-var users = [
-    { id: 1, name: "Alice", role: UserRole.Admin },
-    { id: "u2", name: "Bob", role: UserRole.Teacher },
-    { id: 3, name: "Charlie", role: UserRole.Student }
+var products = [
+    { id: 1, name: "Laptop", price: 1200, quantity: 5 },
+    { id: 2, name: "Mouse", price: 25, quantity: 10 },
+    { id: 3, name: "Keyboard", price: 150, quantity: 8 }
 ];
-console.log("--- All Users ---");
-users.forEach(function (u) { return console.log(getUserInfo(u)); });
-console.log("--- Filtered (Teachers) ---");
-var teachersOnly = users.filter(function (u) { return u.role === UserRole.Teacher; });
-console.log(teachersOnly);
-var CourseManager = /** @class */ (function () {
-    function CourseManager() {
-        this.courses = [];
+var allProducts = products;
+var expensiveProducts = products.filter(function (p) { return p.price > 100; });
+function calculateTotal(items) {
+    return items.reduce(function (acc, item) { return acc + (item.price * item.quantity); }, 0);
+}
+var BaseStore = /** @class */ (function () {
+    function BaseStore() {
     }
-    CourseManager.prototype.addCourse = function (course) {
-        this.courses.push(course);
-        console.log("Course \"".concat(course.title, "\" added."));
-    };
-    CourseManager.prototype.removeCourse = function (id) {
-        this.courses = this.courses.filter(function (c) { return c.id !== id; });
-        console.log("Course with ID ".concat(id, " removed."));
-    };
-    CourseManager.prototype.listCourses = function () {
-        return this.courses;
-    };
-    return CourseManager;
+    return BaseStore;
 }());
-var manager = new CourseManager();
-manager.addCourse({ id: 101, title: "TypeScript Fundamentals" });
-manager.addCourse({ id: 102, title: "Advanced React" });
-console.log("Current courses:", manager.listCourses());
-logAction("System started");
-logAction("User logged in", 1);
-console.log(getStatus());
-/*
---- All Users ---
-main.js:32
-Admin user: Alice
-main.js:33
-Teacher user: Bob
-main.js:33
-Student user: Charlie
-main.js:33
---- Filtered (Teachers) ---
-main.js:34
-(1) [{…}]
-main.js:36
-Course "TypeScript Fundamentals" added.
-main.js:43
-Course "Advanced React" added.
-main.js:43
-Current courses: (2) [{…}, {…}]
-main.js:57
-System: System started
-main.js:21
-ID 1: User logged in
-main.js:21
-Status: Active
-/*
+var ProductStore = /** @class */ (function (_super) {
+    __extends(ProductStore, _super);
+    function ProductStore() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.name = "Main Store";
+        _this._items = [];
+        return _this;
+    }
+    Object.defineProperty(ProductStore.prototype, "count", {
+        get: function () {
+            return this._items.length;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(ProductStore.prototype, "addItem", {
+        set: function (item) {
+            this._items.push(item);
+        },
+        enumerable: false,
+        configurable: true
+    });
+    ProductStore.prototype.updateQty = function (id, qty) {
+        var item = this._items.find(function (p) { return p.id === id; });
+        if (item)
+            item.quantity = qty;
+    };
+    ProductStore.prototype.delete = function (id) {
+        this._items = this._items.filter(function (p) { return p.id !== id; });
+    };
+    ProductStore.prototype.list = function () {
+        console.log(this._items);
+    };
+    ProductStore.prototype.getInfo = function () {
+        return "".concat(this.name, " has ").concat(this.count, " items.");
+    };
+    return ProductStore;
+}(BaseStore));
+var productData = {
+    1: { id: 1, name: "Monitor", price: 300, quantity: 2 },
+    2: { id: 2, name: "Phone", price: 800, quantity: 1 }
+};
+var store = new ProductStore();
+store.addItem = products[0];
+store.list();
+console.log(store.getInfo());
