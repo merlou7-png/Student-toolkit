@@ -2,35 +2,41 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Текстовый слайдер</title>
-    <style>
-        #slider {
-            width: 200px;
-            height: 100px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 2px solid #333;
-            font-size: 24px;
-            font-family: sans-serif;
-            background-color: #f9f9f9;
-        }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TS Dashboard Pro</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="slider"></div>
-    <script>
-        let texts = ['text1', 'text2', 'text3'];
-        let slider = document.querySelector('#slider');
-        let i = 0;
-        slider.textContent = texts[i];
-        setInterval(function() {
-            i++;
-            if (i >= texts.length) {
-                i = 0;
-            }
-            slider.textContent = texts[i];
-        }, 1000);
-    </script>
+    <div class="glass-container">
+        <header>
+            <h1>Academy<span>OS</span></h1>
+            <div id="system-status" class="badge-status">System Online</div>
+        </header>
+
+        <main class="grid-layout">
+            <section class="panel">
+                <div class="panel-header">
+                    <h2>Команда</h2>
+                    <button class="filter-btn" id="filterTeachers">Только Teachers</button>
+                </div>
+                <div id="userList" class="user-grid"></div>
+            </section>
+
+            <section class="panel">
+                <h2>Курсы</h2>
+                <div class="input-group">
+                    <input type="text" id="courseTitle" placeholder="Название нового курса...">
+                    <button id="addCourseBtn" class="plus-btn">+</button>
+                </div>
+                <ul id="courseList" class="course-list"></ul>
+            </section>
+        </main>
+
+        <footer class="terminal">
+            <div class="terminal-header">Terminal Console</div>
+            <div id="logConsole" class="terminal-body"></div>
+        </footer>
+    </div>
+    <script src="script.js"></script>
 </body>
 </html>
