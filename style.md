@@ -1,19 +1,23 @@
-1 задача 
-<img width="1852" height="424" alt="image" src="https://github.com/user-attachments/assets/4a450ff9-59d5-441f-a3c5-1857e9a62031" />
+task 1 
+<img width="606" height="809" alt="image" src="https://github.com/user-attachments/assets/e6958a16-9f0f-4d8e-85bb-6b357aab95bd" />
 
-2 задача
-<img width="530" height="476" alt="image" src="https://github.com/user-attachments/assets/f36adb1d-cecf-49ba-914e-71bee8e8961b" />
+task 2 
+<img width="1155" height="813" alt="image" src="https://github.com/user-attachments/assets/30486be4-738d-418b-8bd6-6d204453f14b" />
 
-3 задача
-<img width="407" height="309" alt="image" src="https://github.com/user-attachments/assets/9570dfc7-deba-4790-a68c-9e4053de4c3f" />
-будет оштбка стринг не может быть совмешен с числом 
+task 3
+<img width="623" height="800" alt="image" src="https://github.com/user-attachments/assets/6d0d022e-69c8-459d-9402-d698e1879fd6" />
 
-4 задача
-<img width="436" height="334" alt="image" src="https://github.com/user-attachments/assets/9f3625e4-de82-41f3-a10e-343504688496" />
- parseInt преобразует строку в число, по этому внутри нельзя совершить мат/кие уровнение 
+task 4 
+<img width="1141" height="623" alt="image" src="https://github.com/user-attachments/assets/d32eb3b4-50d8-4fd9-9056-d533322aaa82" />
 
- 5 задача
- <img width="618" height="734" alt="image" src="https://github.com/user-attachments/assets/450cc02e-fc3c-45cf-a0a2-c98bd7997297" />
+task 5
+<img width="1227" height="823" alt="image" src="https://github.com/user-attachments/assets/9204f933-1550-4f25-bec8-9c844561e2e8" />
 
-6 задача
-<img width="1846" height="360" alt="image" src="https://github.com/user-attachments/assets/8212281f-b5f0-4067-844f-35f4e6250d9c" />
+task 6
+<img width="1045" height="754" alt="image" src="https://github.com/user-attachments/assets/50992598-71d4-4d88-a323-f2d113c9c170" />
+
+task 7 
+<img width="1054" height="781" alt="image" src="https://github.com/user-attachments/assets/2b3ea5ec-8356-4ac5-bd53-97c55dc5692a" />
+
+task 8
+<img width="1122" height="763" alt="image" src="https://github.com/user-attachments/assets/b93280c6-52b8-453f-96c9-ce39df74a88b" />
