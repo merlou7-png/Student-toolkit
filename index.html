@@ -100,14 +100,14 @@
 </section>
 
 <script>
+    // Пути ведут в папку img, которая должна лежать рядом с index.html на GitHub
     const products = [
-        { id: 1, name: "", price: 35000, image: "C:/Users/dwekf/Desktop/img/orig (5).webp"},
-        { id: 2, name: "", price: 25000, image: "C:/Users/dwekf/Desktop/img/7379877692.jpg"},
-        { id: 3, name: "", price: 30000, image: "C:/Users/dwekf/Desktop/img/6049348859.jpg"},
-        { id: 4, name: "", price: 25000, image: "C:/Users/dwekf/Desktop/img/orig (3).webp"},
-        { id: 5, name: "", price: 35000, image: "C:/Users/dwekf/Desktop/img/6973477491.jpg"},
-        { id: 6, name: "", price: 250000, image: "C:/Users/dwekf/Desktop/img/i (3).webp"},
-
+        { id: 1, name: "Puma Future (Pink)", price: 35000, image: "img/orig (5).webp", desc: "Яркий дизайн и контроль" },
+        { id: 2, name: "Adidas Predator Edge", price: 25000, image: "img/orig (9).webp", desc: "Превосходное сцепление с мячом" },
+        { id: 3, name: "Adidas Copa Sense", price: 30000, image: "img/adidas-copa-sense.3-mg-football-boots.webp", desc: "Классический комфорт и касание" },
+        { id: 4, name: "Puma Future (Orange)", price: 25000, image: "img/orig (3).webp", desc: "Адаптивная фиксация" },
+        { id: 5, name: "Puma Future Z (White)", price: 35000, image: "img/orig (6).webp", desc: "Креативность на поле" },
+        { id: 6, name: "Nike Mercurial Superfly", price: 250000, image: "img/i (3).webp", desc: "Профессиональная модель" }
     ];
 
     let cart = JSON.parse(localStorage.getItem('slgehmr_shoes_cart')) || [];
@@ -116,7 +116,7 @@
         const grid = document.getElementById('productGrid');
         grid.innerHTML = data.map(p => `
             <div class="card">
-                <img src="${p.image}" alt="${p.name}">
+                <img src="${p.image}" alt="${p.name}" onerror="this.src='https://via.placeholder.com/200?text=No+Image'">
                 <div>
                     <h3>${p.name}</h3>
                     <p style="font-size: 0.85em; color: #7f8c8d;">${p.desc}</p>
@@ -129,7 +129,10 @@
 
     document.getElementById('searchInput').addEventListener('input', (e) => {
         const val = e.target.value.toLowerCase();
-        renderProducts(products.filter(p => p.name.toLowerCase().includes(val) || p.desc.toLowerCase().includes(val)));
+        renderProducts(products.filter(p => 
+            p.name.toLowerCase().includes(val) || 
+            p.desc.toLowerCase().includes(val)
+        ));
     });
 
     function addToCart(id) {
