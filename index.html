@@ -4,20 +4,188 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VTK IT Academy | Официальная платформа обучения</title>
-</head>
-<body style="margin: 0; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f0f2f5; color: #1a1a1a;">
+    <style>
+        :root {
+            --primary: #003366;
+            --accent: #FFD700;
+            --bg: #f0f2f5;
+            --card-bg: #ffffff;
+            --text: #1a1a1a;
+            --text-muted: #4a5568;
+            --nav-bg: #003366;
+            --shadow: 0 4px 20px rgba(0,0,0,0.08);
+            --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
 
-    <header style="background-color: #003366; color: #ffffff; border-bottom: 4px solid #FFD700; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.2);">
+        [data-theme="dark"] {
+            --primary: #4299e1;
+            --accent: #FFD700;
+            --bg: #1a202c;
+            --card-bg: #2d3748;
+            --text: #f7fafc;
+            --text-muted: #cbd5e0;
+            --nav-bg: #171923;
+            --shadow: 0 4px 20px rgba(0,0,0,0.4);
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            transition: background-color 0.3s ease;
+        }
+
+        header {
+            background-color: var(--nav-bg);
+            color: #ffffff;
+            border-bottom: 4px solid var(--accent);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            transition: var(--transition);
+        }
+
+        .nav-link {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-weight: 600;
+            margin: 0 10px;
+            padding: 8px 12px;
+            border-radius: 6px;
+            transition: var(--transition);
+        }
+
+        .nav-link:hover { 
+            background: rgba(255,255,255,0.1);
+            transform: translateY(-1px);
+        }
+
+        .theme-toggle {
+            background: var(--accent);
+            border: none;
+            color: #000;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-left: 15px;
+            transition: var(--transition);
+        }
+
+        .theme-toggle:hover {
+            filter: brightness(1.1);
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+        }
+
+        .course-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            border-top: 5px solid var(--primary);
+            transition: var(--transition);
+            opacity: 0;
+            transform: translateY(20px);
+            animation: slideUp 0.5s forwards;
+        }
+
+        .course-card:hover { 
+            transform: translateY(-8px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+        }
+
+        .btn-enroll {
+            background: var(--accent);
+            border: none;
+            padding: 15px;
+            font-weight: bold;
+            color: #000;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn-enroll:hover { 
+            background: var(--primary); 
+            color: white; 
+        }
+
+        input, select, textarea {
+            background: var(--card-bg);
+            color: var(--text);
+            border: 1px solid #4a5568;
+            padding: 12px;
+            border-radius: 8px;
+            width: 100%;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .info-block {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        .review-item {
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            padding: 15px 0;
+            transition: background 0.3s;
+        }
+
+        .review-item:last-child { border-bottom: none; }
+
+        section { 
+            animation: fadeIn 0.6s ease-out forwards; 
+        }
+
+        @keyframes fadeIn { 
+            from { opacity: 0; transform: scale(0.98); } 
+            to { opacity: 1; transform: scale(1); } 
+        }
+
+        @keyframes slideUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .support-reason-list {
+            text-align: left;
+            margin-top: 20px;
+            padding-left: 20px;
+        }
+        
+        .support-reason-list li {
+            margin-bottom: 10px;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+
+    <header id="main-header">
         <div style="max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 15px 20px;">
             <div>
-                <h1 style="margin: 0; font-size: 1.8em; letter-spacing: 1px;">VTK <span style="color: #FFD700;">IT</span> ACADEMY</h1>
-                <small style="color: #cbd5e0;">Высший Технический Колледж, Кокшетау</small>
+                <h1 style="margin: 0; font-size: 1.6em;">VTK <span style="color: var(--accent);">IT</span> ACADEMY</h1>
             </div>
-            <nav>
-                <button onclick="showPage('home')" style="background: none; border: none; color: white; cursor: pointer; font-weight: 600; margin: 0 10px;">Главная</button>
-                <button onclick="showPage('courses-page')" style="background: none; border: none; color: white; cursor: pointer; font-weight: 600; margin: 0 10px;">Курсы</button>
-                <button onclick="showPage('auth-page')" style="background: none; border: none; color: white; cursor: pointer; font-weight: 600; margin: 0 10px;">Регистрация</button>
-                <button onclick="showPage('profile-page')" id="nav-profile" style="background: #FFD700; border: none; color: #003366; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-weight: bold; margin-left: 10px; display: none;">Моё обучение</button>
+            <nav style="display: flex; align-items: center;">
+                <button class="nav-link" onclick="showPage('home')">Главная</button>
+                <button class="nav-link" onclick="showPage('courses-page')">Курсы</button>
+                <button class="nav-link" onclick="showPage('support-page')">Поддержка</button>
+                <button class="nav-link" onclick="showPage('auth-page')" id="nav-reg">Регистрация</button>
+                <button onclick="showPage('profile-page')" id="nav-profile" style="background: var(--accent); border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-weight: bold; display: none;">Кабинет</button>
+                <button class="theme-toggle" onclick="toggleTheme()">🌓 Тема</button>
             </nav>
         </div>
     </header>
@@ -25,285 +193,343 @@
     <main style="max-width: 1200px; margin: 30px auto; padding: 0 20px; min-height: 80vh;">
         
         <section id="home">
-            <div style="background: white; padding: 50px; border-radius: 12px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border-top: 8px solid #003366;">
-                <h2 style="color: #003366; font-size: 2.5em; margin-bottom: 20px;">Стань профессионалом в IT</h2>
-                <p style="font-size: 1.2em; color: #4a5568; max-width: 800px; margin: 0 auto 30px; line-height: 1.6;">
-                    Специализированная платформа для абитуриентов и студентов ВТК. Мы обучаем системному администрированию, 
-                    программированию и кибербезопасности на реальных кейсах.
-                </p>
-                <button onclick="showPage('courses-page')" style="background: #003366; color: #FFD700; padding: 18px 45px; font-size: 1.1em; border: none; border-radius: 50px; cursor: pointer; font-weight: bold; transition: 0.3s; box-shadow: 0 4px 15px rgba(0,51,102,0.3);">Выбрать направление</button>
+            <div id="hero-banner" style="background: var(--card-bg); padding: 50px; border-radius: 20px; text-align: center; box-shadow: var(--shadow);">
+                <h2 style="color: var(--primary); font-size: 2.5em; margin-bottom: 20px;">Будущее за IT технологиями</h2>
+                <button onclick="showPage('courses-page')" style="background: var(--primary); color: white; padding: 15px 40px; border: none; border-radius: 50px; cursor: pointer; font-weight: bold; transition: var(--transition);">Начать учиться</button>
             </div>
 
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 40px;">
-                <div style="background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
-                    <h3 style="color: #003366; border-left: 5px solid #FFD700; padding-left: 15px;">Наши эксперты</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin-top: 40px;">
+                <div class="info-block">
+                    <h3 style="color: var(--primary); border-left: 5px solid var(--accent); padding-left: 15px;">Наши эксперты</h3>
                     <div id="teachers-list"></div>
                 </div>
-                <div style="background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
-                    <h3 style="color: #003366; border-left: 5px solid #FFD700; padding-left: 15px;">Мнения студентов</h3>
+                <div class="info-block">
+                    <h3 style="color: var(--primary); border-left: 5px solid var(--accent); padding-left: 15px;">Отзывы студентов</h3>
                     <div id="reviews-list"></div>
                 </div>
             </div>
         </section>
 
         <section id="courses-page" style="display: none;">
-            <div style="margin-bottom: 30px;">
-                <h2 style="color: #003366; font-size: 2em;">Каталог IT-профессий</h2>
-                <div id="filter-bar" style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px; background: #fff; padding: 15px; border-radius: 8px;"></div>
+            <div id="filter-bar" style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 30px; padding: 20px; background: var(--card-bg); border-radius: 12px;"></div>
+            <div id="courses-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px;"></div>
+        </section>
+
+        <section id="support-page" style="display: none;">
+            <div class="info-block" style="max-width: 700px; margin: 0 auto;">
+                <h2>Центр поддержки</h2>
+                <p>Если у вас возникли трудности с доступом к платформе, пожалуйста, ознакомьтесь со списком возможных причин ниже:</p>
+                
+                <ul class="support-reason-list">
+                    <li><strong>Нет интернета:</strong> Проверьте стабильность вашего подключения или перезагрузите роутер.</li>
+                    <li><strong>Проблемы с браузером:</strong> Убедитесь, что ваш браузер обновлен до последней версии для корректной работы скриптов.</li>
+                    <li><strong>Сервер временно недоступен:</strong> Иногда мы проводим плановое обновление системы. Попробуйте зайти через 15-30 минут.</li>
+                    <li><strong>Ошибки загрузки страницы:</strong> Проверьте URL-адрес или попробуйте обновить страницу нажатием F5.</li>
+                    <li><strong>Проблемы с кэшем и cookies:</strong> Попробуйте очистить кэш и куки или откройте сайт в режиме инкогнито.</li>
+                </ul>
+
+                <hr style="margin: 25px 0; border: 0; border-top: 1px solid rgba(0,0,0,0.1);">
+                
+                <h3>Связаться с нами</h3>
+                <textarea id="support-text" style="height: 120px; margin: 15px 0;" placeholder="Опишите вашу проблему максимально подробно..."></textarea>
+                <button onclick="sendSupport()" class="btn-enroll" style="width: 100%; border-radius: 8px;">Отправить запрос</button>
+                <p id="support-msg" style="text-align: center; font-weight: bold; margin-top: 15px;"></p>
             </div>
-            <div id="courses-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px;"></div>
         </section>
 
         <section id="auth-page" style="display: none;">
-            <div style="max-width: 450px; margin: 40px auto; background: white; padding: 40px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1);">
-                <h2 style="color: #003366; text-align: center; margin-bottom: 30px;">Создать профиль</h2>
-                <div style="display: flex; flex-direction: column; gap: 20px;">
-                    <div>
-                        <label style="display:block; margin-bottom: 8px; font-weight: 600;">Полное имя</label>
-                        <input type="text" id="reg-name" placeholder="Иван Иванов" style="width: 100%; padding: 12px; border: 1px solid #cbd5e0; border-radius: 6px; box-sizing: border-box;">
-                    </div>
-                    <div>
-                        <label style="display:block; margin-bottom: 8px; font-weight: 600;">Электронная почта</label>
-                        <input type="email" id="reg-email" placeholder="student@vtk.kz" style="width: 100%; padding: 12px; border: 1px solid #cbd5e0; border-radius: 6px; box-sizing: border-box;">
-                    </div>
-                    <div>
-                        <label style="display:block; margin-bottom: 8px; font-weight: 600;">Пароль</label>
-                        <input type="password" id="reg-pass" style="width: 100%; padding: 12px; border: 1px solid #cbd5e0; border-radius: 6px; box-sizing: border-box;">
-                    </div>
-                    <button onclick="register()" style="background: #003366; color: white; padding: 14px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 1em; margin-top: 10px;">Зарегистрироваться</button>
-                    <p id="reg-msg" style="text-align: center; font-size: 0.9em; min-height: 20px;"></p>
-                </div>
+            <div class="info-block" style="max-width: 400px; margin: 0 auto;">
+                <h2>Регистрация</h2>
+                <input type="text" id="reg-name" placeholder="Имя" style="margin-bottom: 10px;">
+                <input type="email" id="reg-email" placeholder="Email" style="margin-bottom: 20px;">
+                <button onclick="register()" class="btn-enroll" style="width: 100%; border-radius: 8px;">Создать аккаунт</button>
             </div>
         </section>
 
         <section id="profile-page" style="display: none;">
-            <div style="display: grid; grid-template-columns: 300px 1fr; gap: 30px;">
-                <div style="background: #003366; color: white; padding: 30px; border-radius: 12px; height: fit-content;">
-                    <div id="user-info-box">
-                        <h3 id="profile-user-name" style="color: #FFD700; margin-top: 0;">Студент</h3>
-                        <p id="profile-user-email" style="opacity: 0.8;"></p>
-                        <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 20px 0;">
-                        <button onclick="logout()" style="background: transparent; border: 1px solid white; color: white; padding: 8px 15px; border-radius: 4px; cursor: pointer; width: 100%;">Выйти из системы</button>
-                    </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px;">
+                <div class="info-block" style="background: var(--primary); color: white;">
+                    <h3 id="p-name">Студент</h3>
+                    <p id="p-email"></p>
+                    <button onclick="logout()" style="width: 100%; padding: 10px; background: white; color: var(--primary); border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Выйти из аккаунта</button>
                 </div>
-                <div style="background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
-                    <h3 style="color: #003366; margin-top: 0;">Мои выбранные курсы</h3>
-                    <div id="my-courses-list" style="margin-top: 20px;"></div>
+                <div class="info-block">
+                    <h3>Мои активные курсы</h3>
+                    <div id="my-courses-list"></div>
                 </div>
             </div>
         </section>
-
     </main>
 
-    <footer style="background: #1a202c; color: white; padding: 40px 20px; margin-top: 60px; text-align: center;">
-        <p style="margin: 0; opacity: 0.7;">&copy; 2026 Высший Технический Колледж г. Кокшетау</p>
-        <p style="margin: 10px 0 0; color: #FFD700; font-size: 0.9em;">Разработано для IT-департамента ВТК</p>
-    </footer>
-
     <script>
-        const categories = ["Все", "Сисадмин", "Программирование", "ВТ", "Сети", "Безопасность", "Базы данных", "Веб-разработка"];
-
         const courses = [
-            { id: 1, cat: "Сисадмин", level: "Начальный", title: "Администрирование Windows Server", desc: "Установка, настройка ролей AD, DNS, DHCP и групповых политик.", price: "Бесплатно" },
-            { id: 2, cat: "Сисадмин", level: "Средний", title: "Linux: Управление сервером", desc: "Командная строка, Bash-скрипты, настройка веб-серверов Apache/Nginx.", price: "Бесплатно" },
-            { id: 3, cat: "Сисадмин", level: "Продвинутый", title: "Виртуализация и Облака", desc: "Работа с VMware, Hyper-V и введение в архитектуру Azure/AWS.", price: "Бесплатно" },
-            { id: 4, cat: "Сисадмин", level: "Средний", title: "Мониторинг систем Zabbix", desc: "Настройка систем оповещения и сбора метрик состояния оборудования.", price: "Бесплатно" },
-            { id: 5, cat: "Сисадмин", level: "Начальный", title: "Поддержка рабочих станций", desc: "Диагностика неполадок ПО и аппаратной части на уровне Helpdesk.", price: "Бесплатно" },
-
-            { id: 6, cat: "Программирование", level: "Начальный", title: "Основы Python", desc: "Синтаксис, типы данных и написание первых автоматизированных программ.", price: "Бесплатно" },
-            { id: 7, cat: "Программирование", level: "Средний", title: "Объектно-ориентированное на C++", desc: "Классы, наследование, полиморфизм и управление памятью.", price: "Бесплатно" },
-            { id: 8, cat: "Программирование", level: "Средний", title: "Разработка на Java", desc: "Создание кроссплатформенных приложений и работа с коллекциями.", price: "Бесплатно" },
-            { id: 9, cat: "Программирование", level: "Продвинутый", title: "Архитектура ПО", desc: "Паттерны проектирования, SOLID и чистый код для крупных проектов.", price: "Бесплатно" },
-            { id: 10, cat: "Программирование", level: "Начальный", title: "Введение в мобильную разработку", desc: "Создание интерфейсов и логики для Android приложений.", price: "Бесплатно" },
-
-            { id: 11, cat: "ВТ", level: "Начальный", title: "Схемотехника", desc: "Изучение базовых электронных компонентов и законов электрических цепей.", price: "Бесплатно" },
-            { id: 12, cat: "ВТ", level: "Средний", title: "Программирование контроллеров", desc: "Работа с Arduino и STM32: от мигания светодиодом до датчиков.", price: "Бесплатно" },
-            { id: 13, cat: "ВТ", level: "Начальный", title: "Сборка и ремонт ПК", desc: "Архитектура современных ЭВМ и практика устранения железных проблем.", price: "Бесплатно" },
-            { id: 14, cat: "ВТ", level: "Средний", title: "Периферийные устройства", desc: "Принципы работы принтеров, сканеров и систем хранения данных.", price: "Бесплатно" },
-            { id: 15, cat: "ВТ", level: "Продвинутый", title: "Встраиваемые системы", desc: "Разработка автономных устройств на базе Raspberry Pi.", price: "Бесплатно" },
-
-            { id: 16, cat: "Сети", level: "Начальный", title: "Сетевые технологии (CCNA 1)", desc: "Модель OSI, кабели, IP-адресация и основы коммутации.", price: "Бесплатно" },
-            { id: 17, cat: "Сети", level: "Средний", title: "Маршрутизация в сетях", desc: "Статическая и динамическая маршрутизация (RIP, OSPF, EIGRP).", price: "Бесплатно" },
-            { id: 18, cat: "Сети", level: "Средний", title: "Беспроводные сети Wi-Fi", desc: "Проектирование зон покрытия и безопасность беспроводного доступа.", price: "Бесплатно" },
-            { id: 19, cat: "Сети", level: "Продвинутый", title: "Телефония и VoIP", desc: "Настройка IP-АТС и передача голоса через пакетные сети.", price: "Бесплатно" },
-            { id: 20, cat: "Сети", level: "Начальный", title: "Основы сетевой диагностики", desc: "Инструменты ping, traceroute, Wireshark для поиска проблем.", price: "Бесплатно" },
-
-            { id: 21, cat: "Безопасность", level: "Средний", title: "Основы кибербезопасности", desc: "Типы угроз, социальная инженерия и методы защиты личных данных.", price: "Бесплатно" },
-            { id: 22, cat: "Безопасность", level: "Продвинутый", title: "Тестирование на проникновение", desc: "Методы белого взлома для поиска уязвимостей в веб-ресурсах.", price: "Бесплатно" },
-            { id: 23, cat: "Безопасность", level: "Средний", title: "Криптографическая защита", desc: "Принципы шифрования, электронная подпись и работа с сертификатами.", price: "Бесплатно" },
-            { id: 24, cat: "Безопасность", level: "Продвинутый", title: "Безопасность сетей", desc: "Настройка Firewall, IDS/IPS систем и контроль трафика.", price: "Бесплатно" },
-            { id: 25, cat: "Безопасность", level: "Начальный", title: "Законодательство в IT", desc: "Правовые аспекты работы с данными и авторское право в РК.", price: "Бесплатно" },
-
-            { id: 26, cat: "Базы данных", level: "Начальный", title: "Введение в SQL", desc: "Создание таблиц, простые SELECT запросы и фильтрация данных.", price: "Бесплатно" },
-            { id: 27, cat: "Базы данных", level: "Средний", title: "Администрирование PostgreSQL", desc: "Резервное копирование, оптимизация производительности и триггеры.", price: "Бесплатно" },
-            { id: 28, cat: "Базы данных", level: "Средний", title: "NoSQL решения: MongoDB", desc: "Работа с документоориентированными БД и быстрая обработка данных.", price: "Бесплатно" },
-            { id: 29, cat: "Базы данных", level: "Продвинутый", title: "Анализ данных в SQL", desc: "Оконные функции и сложные аналитические отчеты средствами БД.", price: "Бесплатно" },
-            { id: 30, cat: "Базы данных", level: "Средний", title: "Проектирование и ER-диаграммы", desc: "Логическая и физическая структура БД, нормализация до 3НФ.", price: "Бесплатно" },
-
-            { id: 31, cat: "Веб-разработка", level: "Начальный", title: "HTML5 и CSS3", desc: "Верстка адаптивных сайтов с использованием Flexbox и Grid.", price: "Бесплатно" },
-            { id: 32, cat: "Веб-разработка", level: "Средний", title: "JavaScript для Frontend", desc: "Анимации, обработка событий и работа с внешними API.", price: "Бесплатно" },
-            { id: 33, cat: "Веб-разработка", level: "Средний", title: "Backend на Node.js", desc: "Создание серверной части, работа с Express и аутентификация.", price: "Бесплатно" },
-            { id: 34, cat: "Веб-разработка", level: "Продвинутый", title: "Фреймворк React", desc: "Компонентный подход и управление состоянием через Redux/Context.", price: "Бесплатно" },
-            { id: 35, cat: "Веб-разработка", level: "Средний", title: "WordPress и CMS", desc: "Быстрое развертывание сайтов и настройка шаблонов без кода.", price: "Бесплатно" }
-        ];
-
-        const teachers = [
-            { name: "Касымов Арман", exp: "12 лет", area: "Системная инженерия" },
-            { name: "Смагулов Данияр", exp: "8 лет", area: "Fullstack разработка" },
-            { name: "Байжанова Айгуль", exp: "10 лет", area: "Кибербезопасность" },
-            { name: "Петров Сергей", exp: "15 лет", area: "Вычислительная техника" },
-            { name: "Алиева Дина", exp: "6 лет", area: "Анализ данных" }
+            { id: 1, cat: "Сисадмин", title: "Windows Server 2022", desc: "Управление доменами и GPO." },
+            { id: 2, cat: "Сисадмин", title: "Linux LPIC-1", desc: "Администрирование систем на базе Debian и RHEL." },
+            { id: 3, cat: "Сисадмин", title: "Виртуализация Proxmox", desc: "Создание отказоустойчивых кластеров." },
+            { id: 4, cat: "Сисадмин", title: "Docker & Kubernetes", desc: "Контейнеризация приложений с нуля." },
+            { id: 5, cat: "Сисадмин", title: "Резервное копирование", desc: "Настройка Veeam и систем бэкапа." },
+            { id: 6, cat: "Сисадмин", title: "Мониторинг Zabbix", desc: "Слежение за состоянием серверов 24/7." },
+            { id: 7, cat: "Сисадмин", title: "Облачные вычисления", desc: "Работа с AWS и Azure." },
+            { id: 8, cat: "Сисадмин", title: "Почтовые серверы", desc: "Настройка Exchange и Postfix." },
+            { id: 9, cat: "Программирование", title: "Python Pro", desc: "Data Science и нейросети на Python." },
+            { id: 10, cat: "Программирование", title: "Java Backend", desc: "Разработка на Spring Boot." },
+            { id: 11, cat: "Программирование", title: "C++ для системщиков", desc: "Низкоуровневое программирование." },
+            { id: 12, cat: "Программирование", title: "Go (Golang)", desc: "Создание высоконагруженных сервисов." },
+            { id: 13, cat: "Программирование", title: "C# и .NET Core", desc: "Корпоративная разработка ПО." },
+            { id: 14, cat: "Программирование", title: "Разработка игр на Unity", desc: "Создание 3D и 2D игр." },
+            { id: 15, cat: "Программирование", title: "Swift для iOS", desc: "Разработка под Apple устройства." },
+            { id: 16, cat: "Программирование", title: "Android (Kotlin)", desc: "Мобильная разработка под Android." },
+            { id: 17, cat: "Безопасность", title: "Этичный хакинг", desc: "Тестирование на проникновение." },
+            { id: 18, cat: "Безопасность", title: "Криптография", desc: "Методы шифрования данных." },
+            { id: 19, cat: "Безопасность", title: "Защита сетей Wi-Fi", desc: "Предотвращение атак на беспроводные сети." },
+            { id: 20, cat: "Безопасность", title: "Анализ малвари", desc: "Разбор вирусов и троянов." },
+            { id: 21, cat: "Безопасность", title: "Безопасность в Web", desc: "Защита от SQL-инъекций и XSS." },
+            { id: 22, cat: "Безопасность", title: "OSINT разведка", desc: "Поиск информации по открытым источникам." },
+            { id: 23, cat: "Безопасность", title: "Кибер-право", desc: "Юридические аспекты IT безопасности." },
+            { id: 24, cat: "Безопасность", title: "Аудит ИТ систем", desc: "Проверка соответствия стандартам." },
+            { id: 25, cat: "Анализ данных", title: "Анализ данных в SQL", desc: "Построение сложных запросов и работа с BigQuery." },
+            { id: 26, cat: "Анализ данных", title: "Machine Learning", desc: "Обучение моделей на реальных наборах данных." },
+            { id: 27, cat: "Веб-разработка", title: "Fullstack JavaScript", desc: "Изучение React для фронтенда и Node.js для бэкенда." },
+            { id: 28, cat: "DevOps", title: "CI/CD Pipeline", desc: "Автоматизация деплоя проектов через GitLab CI и Jenkins." },
+            { id: 29, cat: "Дизайн", title: "UI/UX Проектирование", desc: "Создание интерфейсов в Figma от идеи до прототипа." },
+            { id: 30, cat: "Веб-разработка", title: "Основы HTML/CSS", desc: "Создание адаптивной верстки сайтов." },
+            { id: 31, cat: "Веб-разработка", title: "JavaScript Basic", desc: "Основы логики и работы с DOM." },
+            { id: 32, cat: "Веб-разработка", title: "Vue.js Framework", desc: "Разработка реактивных интерфейсов." },
+            { id: 33, cat: "Веб-разработка", title: "Backend на PHP", desc: "Создание серверной логики на PHP 8." },
+            { id: 34, cat: "Веб-разработка", title: "TypeScript для профи", desc: "Типизация приложений на JS." },
+            { id: 35, cat: "Веб-разработка", title: "Node.js и Express", desc: "Построение REST API сервисов." },
+            { id: 36, cat: "Веб-разработка", title: "Next.js и SSR", desc: "Оптимизация и SEO для React." },
+            { id: 37, cat: "Веб-разработка", title: "Web Performance", desc: "Оптимизация скорости загрузки." },
+            { id: 38, cat: "Кибербезопасность", title: "Сетевая безопасность", desc: "Настройка фаерволов и VPN." },
+            { id: 39, cat: "Кибербезопасность", title: "Защита облаков", desc: "Безопасность инфраструктуры в облаке." },
+            { id: 40, cat: "Кибербезопасность", title: "Криминалистика", desc: "Расследование киберпреступлений." },
+            { id: 41, cat: "Кибербезопасность", title: "Реверс-инжиниринг", desc: "Анализ бинарного кода программ." },
+            { id: 42, cat: "Кибербезопасность", title: "DevSecOps", desc: "Интеграция безопасности в CI/CD." },
+            { id: 43, cat: "Кибербезопасность", title: "Pentest мобильных ПО", desc: "Взлом и защита Android приложений." },
+            { id: 44, cat: "Кибербезопасность", title: "Инженерная психология", desc: "Противодействие социальной инженерии." },
+            { id: 45, cat: "Кибербезопасность", title: "Системы IDS/IPS", desc: "Обнаружение вторжений в сеть." },
+            { id: 46, cat: "Кибербезопасность", title: "Безопасность Docker", desc: "Защита контейнеризированных сред." },
+            { id: 47, cat: "Анализ данных", title: "Python для анализа", desc: "Библиотеки Pandas и NumPy." },
+            { id: 48, cat: "Анализ данных", title: "Визуализация данных", desc: "Построение графиков в Tableau." },
+            { id: 49, cat: "Анализ данных", title: "Статистика для DS", desc: "Математическая база для аналитика." },
+            { id: 50, cat: "Анализ данных", title: "Big Data основы", desc: "Работа с Hadoop и Spark." },
+            { id: 51, cat: "Анализ данных", title: "Deep Learning", desc: "Сложные нейронные сети и Keras." },
+            { id: 52, cat: "Анализ данных", title: "NLP обработка текста", desc: "Анализ естественного языка." },
+            { id: 53, cat: "Анализ данных", title: "Excel для профи", desc: "Продвинутые формулы и VBA." },
+            { id: 54, cat: "Анализ данных", title: "A/B тестирование", desc: "Проверка гипотез на данных." },
+            { id: 55, cat: "DevOps", title: "Ansible Automation", desc: "Управление конфигурациями." },
+            { id: 56, cat: "DevOps", title: "Terraform IaC", desc: "Инфраструктура как код." },
+            { id: 57, cat: "DevOps", title: "Kubernetes Admin", desc: "Администрирование K8s кластеров." },
+            { id: 58, cat: "DevOps", title: "Prometheus & Grafana", desc: "Построение систем мониторинга." },
+            { id: 59, cat: "DevOps", title: "Linux Shell Script", desc: "Автоматизация в терминале." },
+            { id: 60, cat: "DevOps", title: "GitLab Advanced", desc: "Сложные пайплайны сборки." },
+            { id: 61, cat: "DevOps", title: "ELK Stack", desc: "Сбор и анализ логов систем." },
+            { id: 62, cat: "DevOps", title: "SRE практики", desc: "Обеспечение надежности систем." },
+            { id: 63, cat: "DevOps", title: "Azure DevOps", desc: "Инструменты Microsoft для CI/CD." },
+            { id: 64, cat: "Мобильная разработка", title: "Flutter Basic", desc: "Кроссплатформенная разработка." },
+            { id: 65, cat: "Мобильная разработка", title: "React Native", desc: "Мобильные приложения на JS." },
+            { id: 66, cat: "Мобильная разработка", title: "iOS Swift UI", desc: "Современные интерфейсы Apple." },
+            { id: 67, cat: "Мобильная разработка", title: "Android Jetpack Compose", desc: "Декларативный UI под Android." },
+            { id: 68, cat: "Мобильная разработка", title: "Dart для профи", desc: "Углубленное изучение языка Dart." },
+            { id: 69, cat: "Мобильная разработка", title: "Mobile UI Design", desc: "Специфика дизайна для смартфонов." },
+            { id: 70, cat: "Мобильная разработка", title: "Архитектура MVVM", desc: "Чистая архитектура мобильных программ." },
+            { id: 71, cat: "Мобильная разработка", title: "Firebase Integration", desc: "Облачный бэкенд для приложений." },
+            { id: 72, cat: "Мобильная разработка", title: "App Store & Play Market", desc: "Публикация и монетизация." },
+            { id: 73, cat: "Мобильная разработка", title: "Kotlin Multiplatform", desc: "Общая бизнес-логика для платформ." }
         ];
 
         const reviews = [
-            { name: "Ержан П.", text: "Благодаря курсу по сетям прошел практику в крупном дата-центре." },
-            { name: "Мария В.", text: "Очень крутой подход к веб-разработке, всё по делу и без лишней воды." },
-            { name: "Алексей Т.", text: "Курсы по сисадмину помогли сдать экзамены в колледже на отлично." },
-            { name: "Саят Н.", text: "Платформа удобная, всё интуитивно понятно и профессионально." }
+            { name: "Айбек Султанов", text: "Прошел курс по Python. Материал подается очень доступно, менторы всегда на связи. Теперь работаю Junior-разработчиком!" },
+            { name: "Мадина Ахметова", text: "Курс по дизайну превзошел ожидания. Очень много практики и разборов реальных кейсов." },
+            { name: "Берик Касымов", text: "Отличная академия для тех, кто хочет сменить профессию. Системное администрирование преподают практики." },
+            { name: "Динара Оспанова", text: "Закончила курс Web-разработки. Сложно, но оно того стоит. Портфолио пополнилось крутыми проектами." },
+            { name: "Алишер Темирлан", text: "Лучшие курсы по Кибербезопасности в регионе. Реальные стенды и актуальные уязвимости." },
+            { name: "Гульнур Сабитова", text: "Благодарю за курс по Анализу данных. Помогло автоматизировать отчеты на моей текущей работе." },
+            { name: "Нурлан Ибраев", text: "DevOps направление очень мощное. Docker и K8s объяснили буквально на пальцах." },
+            { name: "Асель Жумабекова", text: "Удобная платформа и крутая темная тема. Учиться по вечерам одно удовольствие!" },
+            { name: "Елена Смирнова", text: "Очень качественный контент. Мобильная разработка преподается на высшем уровне, все проекты актуальны." },
+            { name: "Кайрат Нуртас", text: "Обучение превзошло все мои ожидания. Программа по Кибербезопасности действительно глубокая и техническая." },
+            { name: "Ольга Иванова", text: "Курсы по Анализу данных помогли мне получить повышение. Спасибо преподавателям за терпение и знания." },
+            { name: "Данияр Елеусинов", text: "Веб-разработка здесь — это прежде всего практика. Создал свой первый работающий сайт за два месяца." },
+            { name: "Светлана Петрова", text: "Система поддержки студентов работает отлично. Любой технический вопрос решается очень быстро." },
+            { name: "Аманжол Рысбек", text: "Для новичка в DevOps программа идеальная. Постепенный переход от простых скриптов к облачным решениям." },
+            { name: "Мария Соколова", text: "Интерфейс платформы очень приятный. Ничего не отвлекает от учебы, все логично и понятно." },
+            { name: "Тимур Бекмамбетов", text: "Профессиональный подход к обучению. Мастера знают свое дело и делятся реальным опытом из индустрии." }
         ];
 
-        let myCourses = [];
-        let currentUser = null;
+        const teachers = [
+            { name: "Иван Иванов", exp: "15 лет", area: "DevOps" },
+            { name: "Петр Сидоров", exp: "10 лет", area: "Cybersecurity" },
+            { name: "Анна Смирнова", exp: "8 лет", area: "Frontend" },
+            { name: "Дмитрий Волков", exp: "12 лет", area: "Data Science" },
+            { name: "Елена Кузнецова", exp: "9 лет", area: "Java Dev" },
+            { name: "Сергей Попов", exp: "14 лет", area: "Linux Admin" },
+            { name: "Арман Кудайбергенов", exp: "11 лет", area: "Mobile Development" },
+            { name: "Виктор Морозов", exp: "13 лет", area: "Cloud Architect" },
+            { name: "Айгерим Муратова", exp: "7 лет", area: "UI/UX Design" },
+            { name: "Николай Федоров", exp: "16 лет", area: "Backend Systems" },
+            { name: "Бауыржан Исаев", exp: "10 лет", area: "Machine Learning" }
+        ];
 
-        function showPage(pageId) {
-            const pages = ['home', 'courses-page', 'auth-page', 'profile-page'];
-            pages.forEach(id => {
-                document.getElementById(id).style.display = (id === pageId) ? 'block' : 'none';
-            });
-            window.scrollTo(0,0);
+        let state = {
+            theme: localStorage.getItem('theme') || 'light',
+            user: JSON.parse(localStorage.getItem('user')) || null,
+            myCourses: JSON.parse(localStorage.getItem('myCourses')) || []
+        };
+
+        function toggleTheme() {
+            state.theme = state.theme === 'light' ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', state.theme);
+            localStorage.setItem('theme', state.theme);
         }
 
-        function initApp() {
-            renderFilterButtons();
+        function init() {
+            document.documentElement.setAttribute('data-theme', state.theme);
+            renderFilters();
             renderCourses();
             renderTeachers();
             renderReviews();
+            checkAuth();
+            applyJSAnimations();
         }
 
-        function renderFilterButtons() {
-            const filterBar = document.getElementById('filter-bar');
-            categories.forEach(cat => {
-                const btn = document.createElement('button');
-                btn.innerText = cat;
-                btn.style.cssText = "padding: 8px 18px; cursor: pointer; background: #f0f2f5; border: 1px solid #cbd5e0; border-radius: 20px; font-weight: 500;";
-                btn.onclick = () => renderCourses(cat);
-                filterBar.appendChild(btn);
+        function applyJSAnimations() {
+            const sections = document.querySelectorAll('section');
+            sections.forEach(sec => {
+                sec.style.opacity = '0';
+                sec.style.transition = 'opacity 0.8s ease-in-out, transform 0.8s ease-in-out';
+                sec.style.transform = 'translateY(10px)';
             });
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            sections.forEach(sec => observer.observe(sec));
+        }
+
+        function renderFilters() {
+            const bar = document.getElementById('filter-bar');
+            const cats = ["Все", ...new Set(courses.map(c => c.cat))];
+            bar.innerHTML = cats.map(c => `<button class="nav-link" style="color:var(--text); border:1px solid var(--primary); margin: 5px;" onclick="renderCourses('${c}')">${c}</button>`).join('');
         }
 
         function renderCourses(filter = "Все") {
             const grid = document.getElementById('courses-grid');
-            grid.innerHTML = '';
-            const filtered = filter === "Все" ? courses : courses.filter(c => c.cat === filter);
-            filtered.forEach(c => {
-                const card = document.createElement('div');
-                card.style.cssText = "background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.08); display: flex; flex-direction: column; border-top: 4px solid #003366;";
-                card.innerHTML = `
+            const data = filter === "Все" ? courses : courses.filter(c => c.cat === filter);
+            grid.innerHTML = data.map((c, index) => `
+                <div class="course-card" style="animation: none; opacity: 1; transform: none; transition: transform 0.3s ease;">
                     <div style="padding: 20px; flex-grow: 1;">
-                        <span style="background: #e2e8f0; color: #003366; padding: 4px 10px; border-radius: 12px; font-size: 0.75em; font-weight: bold; text-transform: uppercase;">${c.cat}</span>
-                        <h3 style="margin: 15px 0 10px; color: #003366;">${c.title}</h3>
-                        <p style="color: #4a5568; font-size: 0.9em; line-height: 1.5; margin-bottom: 15px;">${c.desc}</p>
-                        <div style="font-size: 0.85em; color: #718096;">
-                            <strong>Сложность:</strong> ${c.level}<br>
-                            <strong>Статус:</strong> ${c.price}
-                        </div>
+                        <small style="color: var(--primary); font-weight: bold; text-transform: uppercase;">${c.cat}</small>
+                        <h3 style="margin: 10px 0;">${c.title}</h3>
+                        <p style="color: var(--text-muted); font-size: 0.9em; line-height: 1.4;">${c.desc}</p>
                     </div>
-                    <button onclick="enroll(${c.id})" style="background: #FFD700; border: none; padding: 15px; font-weight: bold; color: #003366; cursor: pointer; transition: 0.2s;">Записаться на курс</button>
-                `;
-                grid.appendChild(card);
-            });
+                    <button class="btn-enroll" onclick="enroll(${c.id})">Записаться на курс</button>
+                </div>
+            `).join('');
         }
 
         function renderTeachers() {
-            const container = document.getElementById('teachers-list');
-            teachers.forEach(t => {
-                container.innerHTML += `
-                    <div style="margin-top: 15px; padding-bottom: 15px; border-bottom: 1px solid #edf2f7;">
-                        <div style="font-weight: bold; color: #003366;">${t.name}</div>
-                        <div style="font-size: 0.85em; color: #4a5568;">${t.area} • Опыт: ${t.exp}</div>
-                    </div>`;
-            });
+            const list = document.getElementById('teachers-list');
+            list.innerHTML = teachers.map(t => `<div style="margin-bottom:15px; padding-bottom: 10px; border-bottom: 1px solid rgba(0,0,0,0.05)"><strong>${t.name}</strong><br><small style="color: var(--text-muted)">${t.area} — Опыт ${t.exp}</small></div>`).join('');
         }
 
         function renderReviews() {
-            const container = document.getElementById('reviews-list');
-            reviews.forEach(r => {
-                container.innerHTML += `
-                    <div style="margin-top: 15px; background: #f8fafc; padding: 15px; border-radius: 8px; font-size: 0.9em; border-left: 3px solid #FFD700;">
-                        <p style="margin: 0; font-style: italic;">"${r.text}"</p>
-                        <div style="margin-top: 10px; font-weight: bold; color: #003366;">— ${r.name}</div>
-                    </div>`;
+            const list = document.getElementById('reviews-list');
+            list.innerHTML = reviews.map(r => `
+                <div class="review-item">
+                    <div style="font-weight: bold; color: var(--primary);">${r.name}</div>
+                    <div style="font-size: 0.9em; font-style: italic; margin-top: 5px;">"${r.text}"</div>
+                </div>
+            `).join('');
+        }
+
+        function showPage(id) {
+            const sections = ['home', 'courses-page', 'support-page', 'auth-page', 'profile-page'];
+            sections.forEach(p => {
+                const el = document.getElementById(p);
+                if (p === id) {
+                    el.style.display = 'block';
+                    let opacity = 0;
+                    const animate = () => {
+                        opacity += 0.05;
+                        el.style.opacity = opacity;
+                        if (opacity < 1) requestAnimationFrame(animate);
+                    };
+                    el.style.opacity = '0';
+                    animate();
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                } else {
+                    el.style.display = 'none';
+                }
             });
+        }
+
+        function enroll(id) {
+            if(!state.user) {
+                alert("Для записи необходимо войти в аккаунт.");
+                return showPage('auth-page');
+            }
+            const course = courses.find(c => c.id === id);
+            if(!state.myCourses.find(c => c.id === id)) {
+                state.myCourses.push(course);
+                localStorage.setItem('myCourses', JSON.stringify(state.myCourses));
+                alert(`Поздравляем! Вы успешно записаны на курс "${course.title}".`);
+                checkAuth();
+            } else {
+                alert("Вы уже записаны на этот курс.");
+            }
         }
 
         function register() {
             const name = document.getElementById('reg-name').value;
             const email = document.getElementById('reg-email').value;
-            const pass = document.getElementById('reg-pass').value;
-            const msg = document.getElementById('reg-msg');
-            if (!name || !email || !pass) {
-                msg.style.color = "#e53e3e";
-                msg.innerText = "Ошибка: Заполните все поля формы";
-                return;
-            }
-            if (!email.includes('@')) {
-                msg.style.color = "#e53e3e";
-                msg.innerText = "Ошибка: Некорректный формат email";
-                return;
-            }
-            currentUser = { name, email };
-            document.getElementById('nav-profile').style.display = 'inline-block';
-            updateProfileUI();
+            if(!name || !email) return alert("Пожалуйста, заполните все поля.");
+            
+            state.user = { name, email };
+            localStorage.setItem('user', JSON.stringify(state.user));
+            checkAuth();
             showPage('profile-page');
         }
 
+        function sendSupport() {
+            const text = document.getElementById('support-text').value;
+            const msg = document.getElementById('support-msg');
+            if(!text) return alert("Пожалуйста, введите текст сообщения.");
+            
+            msg.innerText = "Ваше сообщение отправлено. Ожидайте ответа на почту в течение 24 часов.";
+            msg.style.color = "green";
+            document.getElementById('support-text').value = "";
+        }
+
+        function checkAuth() {
+            if(state.user) {
+                document.getElementById('nav-reg').style.display = 'none';
+                document.getElementById('nav-profile').style.display = 'block';
+                document.getElementById('p-name').innerText = state.user.name;
+                document.getElementById('p-email').innerText = state.user.email;
+                
+                const list = document.getElementById('my-courses-list');
+                if(state.myCourses.length > 0) {
+                    list.innerHTML = state.myCourses.map(c => `<div style="padding: 10px; margin-bottom: 5px; background: rgba(0,0,0,0.05); border-radius: 4px;">✅ ${c.title}</div>`).join('');
+                } else {
+                    list.innerHTML = "<p>Вы еще не записались ни на один курс.</p>";
+                }
+            }
+        }
+
         function logout() {
-            currentUser = null;
-            myCourses = [];
-            document.getElementById('nav-profile').style.display = 'none';
-            showPage('home');
+            localStorage.removeItem('user');
+            localStorage.removeItem('myCourses');
+            location.reload();
         }
 
-        function enroll(id) {
-            if (!currentUser) {
-                alert("Для записи на курс необходимо войти в систему или зарегистрироваться.");
-                showPage('auth-page');
-                return;
-            }
-            const course = courses.find(c => c.id === id);
-            if (!myCourses.find(c => c.id === id)) {
-                myCourses.push(course);
-                updateProfileUI();
-                alert(`Вы успешно записаны на курс: ${course.title}`);
-            } else {
-                alert("Вы уже изучаете этот курс.");
-            }
-        }
-
-        function updateProfileUI() {
-            if (!currentUser) return;
-            document.getElementById('profile-user-name').innerText = currentUser.name;
-            document.getElementById('profile-user-email').innerText = currentUser.email;
-            const list = document.getElementById('my-courses-list');
-            list.innerHTML = '';
-            if (myCourses.length === 0) {
-                list.innerHTML = `<div style="text-align: center; color: #a0aec0; padding: 40px;">У вас пока нет активных курсов.</div>`;
-            } else {
-                myCourses.forEach(c => {
-                    list.innerHTML += `
-                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid #edf2f7;">
-                            <div>
-                                <div style="font-weight: bold; color: #003366;">${c.title}</div>
-                                <div style="font-size: 0.8em; color: #718096;">Направление: ${c.cat}</div>
-                            </div>
-                            <span style="color: #38a169; font-size: 0.85em; font-weight: bold;">● Активен</span>
-                        </div>
-                    `;
-                });
-            }
-        }
-
-        initApp();
+        init();
     </script>
 </body>
 </html>
